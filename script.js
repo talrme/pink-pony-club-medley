@@ -68,14 +68,25 @@ async function loadSongs() {
                     if (song.title) {
                         songs.push(song);
                     }
+                } else if (response.status === 404) {
+                    // File doesn't exist, continue checking next files
+                    continue;
+                } else {
+                    // Other error, stop
+                    break;
                 }
             } catch (error) {
-                // File doesn't exist, continue
-                break;
+                // Network error or file doesn't exist, continue
+                console.log(`Song ${i} not found, continuing...`);
+                continue;
             }
         }
         
         console.log('Loaded songs:', songs.length);
+        
+        if (songs.length === 0) {
+            console.error('No songs loaded! Check file paths.');
+        }
         
         // Initialize order as 0, 1, 2, 3...
         currentOrder = songs.map((_, index) => index);
