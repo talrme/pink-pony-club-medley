@@ -120,8 +120,14 @@ function parseSongMarkdown(text) {
     return {
         title: titleMatch ? titleMatch[1] : '',
         artist: artistMatch ? artistMatch[1] : 'Unknown',
-        lyrics: lyrics.trim()
+        lyrics: convertMarkdownToHTML(lyrics.trim())
     };
+}
+
+// Convert basic markdown to HTML (bold text)
+function convertMarkdownToHTML(text) {
+    // Convert **bold** to <strong>bold</strong>
+    return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 }
 
 // Apply progression from URL parameter
@@ -656,6 +662,9 @@ async function switchProgression(newProgression) {
         closeProgressionModal();
         return;
     }
+    
+    // Close modal immediately
+    closeProgressionModal();
     
     currentProgression = newProgression;
     
