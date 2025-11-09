@@ -1,0 +1,18 @@
+---
+title: "Blue Moon"
+artist: "Frank Sinatra"
+---
+
+Blue moon, you saw me standing alone
+**Without a dream in my heart**
+Without a love of my own
+
+Blue moon, you knew just what I was there for
+**You heard me saying a prayer for**
+Someone I really could care for
+
+And then there suddenly appeared before me
+**The only one my arms will ever hold**
+I heard somebody whisper, "Please adore me"
+And when I looked, the moon had turned to gold
+

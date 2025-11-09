@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pink Pony Club Medley</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Banner Section -->
+        <div class="banner">
+            <img src="banner-placeholder.png" alt="Pink Pony Club Medley Banner" id="banner-image">
+        </div>
+
+        <!-- Header -->
+        <header>
+            <!-- Chord Transposer -->
+            <div class="transpose-pill">
+                <div class="chords">
+                    <span class="chord" id="chord-1">F#</span>
+                    <span class="chord" id="chord-2">G#m</span>
+                    <span class="chord" id="chord-3">D#m</span>
+                    <span class="chord" id="chord-4">B</span>
+                </div>
+                <div class="controls">
+                    <button id="transpose-down" aria-label="Transpose down">−</button>
+                    <button id="transpose-up" aria-label="Transpose up">+</button>
+                </div>
+            </div>
+            <p class="subtitle">
+                I • ii • vi • IV
+                <button id="edit-progression" class="edit-button" aria-label="Change progression">⚙️</button>
+            </p>
+        </header>
+
+        <!-- Songs List (Accordion) -->
+        <div id="songs-container" class="songs-list">
+            <!-- Songs will be dynamically loaded here -->
+        </div>
+
+        <!-- Progression Selection Modal -->
+        <div id="progression-modal" class="modal">
+            <div class="modal-content progression-modal-content">
+                <!-- Content will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="loading">Loading songs...</div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

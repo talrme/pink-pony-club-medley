@@ -1,0 +1,484 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Banner */
+.banner {
+    width: 100%;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.banner:hover {
+    transform: scale(1.01);
+}
+
+.banner:active {
+    transform: scale(0.99);
+}
+
+.banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Header */
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Chord Transposer Pill */
+.transpose-pill {
+    display: inline-flex;
+    align-items: center;
+    background: white;
+    border-radius: 20px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.transpose-pill .chords {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: 600;
+    color: #667eea;
+}
+
+.transpose-pill .chord {
+    min-width: 38px;
+    text-align: center;
+}
+
+.transpose-pill .chord:not(:last-child)::after {
+    content: '•';
+    margin-left: 7px;
+    color: #ddd;
+    font-weight: 400;
+}
+
+.transpose-pill .controls {
+    display: flex;
+    gap: 4px;
+    margin-left: 12px;
+}
+
+.transpose-pill button {
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.transpose-pill button:hover {
+    background: #e5e5e5;
+}
+
+.transpose-pill button:active {
+    background: #e0e0e0;
+}
+
+.subtitle {
+    font-size: 0.75rem;
+    opacity: 0.75;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.edit-button {
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0 4px;
+    opacity: 0.5;
+    transition: all 0.2s;
+    color: white;
+    line-height: 1;
+}
+
+.edit-button:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+.edit-button:active {
+    transform: scale(0.95);
+}
+
+/* Songs List */
+.songs-list {
+    max-width: 800px;
+    margin: 0 auto 40px;
+}
+
+/* Accordion Item */
+.accordion-item {
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.accordion-item.dragging {
+    opacity: 0.5;
+}
+
+.accordion-item.drag-preview {
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0.9;
+    transform: scale(1.05) rotate(2deg);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    transition: none;
+}
+
+.accordion-item.drag-over {
+    border: 2px dashed #667eea;
+    background: #f0f4ff;
+}
+
+/* Smooth transitions for reordering */
+.accordion-item:not(.dragging):not(.drag-preview) {
+    transition: transform 0.3s ease, margin 0.3s ease, all 0.3s ease;
+}
+
+/* Accordion Header */
+.accordion-header {
+    padding: 14px 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    transition: background 0.2s;
+    position: relative;
+}
+
+.accordion-header:active {
+    background: #f8f8f8;
+}
+
+.accordion-info {
+    flex: 1;
+    padding-right: 40px;
+}
+
+.accordion-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #667eea;
+    margin-bottom: 4px;
+}
+
+.accordion-artist {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.accordion-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.drag-handle {
+    font-size: 1.4rem;
+    color: #ccc;
+    cursor: grab;
+    line-height: 1;
+    padding: 0 4px;
+    user-select: none;
+    touch-action: none;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.accordion-header:hover .drag-handle {
+    color: #667eea;
+}
+
+.accordion-icon {
+    font-size: 1.2rem;
+    color: #999;
+    transition: transform 0.3s ease;
+    line-height: 1;
+}
+
+.accordion-item.active .accordion-icon {
+    transform: rotate(180deg);
+}
+
+/* Accordion Content */
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: white;
+}
+
+.accordion-item.active .accordion-content {
+    max-height: 2000px;
+}
+
+.accordion-lyrics {
+    padding: 16px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    color: #333;
+    border-top: 1px solid #e8e8e8;
+}
+
+
+/* Loading */
+.loading {
+    display: none;
+    text-align: center;
+    color: white;
+    font-size: 1.2rem;
+    padding: 40px;
+}
+
+.loading.show {
+    display: block;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 20px;
+    padding: 30px;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    font-weight: 300;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    line-height: 1;
+}
+
+.close-button:hover {
+    color: #333;
+}
+
+.modal-content h2 {
+    color: #667eea;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+/* Progression Options */
+.progression-option {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border: 2px solid #e0e0e0;
+}
+
+.progression-option:hover {
+    background: #f8f8f8;
+    border-color: #667eea;
+}
+
+.progression-option.selected {
+    background: #f0f4ff;
+    border-color: #667eea;
+}
+
+.progression-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    margin-right: 15px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.progression-option.selected .progression-radio {
+    border-color: #667eea;
+}
+
+.progression-option.selected .progression-radio::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #667eea;
+    border-radius: 50%;
+}
+
+.progression-info {
+    flex: 1;
+}
+
+.progression-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.progression-chords {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    header {
+        margin-bottom: 20px;
+    }
+
+    .transpose-pill {
+        font-size: 0.85rem;
+        padding: 7px 10px;
+    }
+
+    .transpose-pill button {
+        width: 24px;
+        height: 24px;
+        font-size: 0.9rem;
+    }
+
+    .subtitle {
+        font-size: 0.7rem;
+    }
+
+    .edit-button {
+        font-size: 0.85rem;
+    }
+
+    .accordion-header {
+        padding: 12px 14px;
+    }
+
+    .accordion-title {
+        font-size: 1rem;
+    }
+
+    .accordion-artist {
+        font-size: 0.8rem;
+    }
+
+    .accordion-lyrics {
+        padding: 14px;
+        font-size: 0.95rem;
+    }
+
+    .accordion-icon {
+        font-size: 1rem;
+    }
+
+    .drag-handle {
+        font-size: 1.2rem;
+    }
+}
+
