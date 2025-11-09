@@ -1,6 +1,8 @@
 # Pink Pony Club Medley 🎵
 
-A beautiful, mobile-friendly web app for exploring songs with common chord progressions. View lyrics, transpose keys, reorder songs, and share custom arrangements via URL.
+**Live Site**: https://talrme.github.io/pink-pony-club-medley/
+
+Explore songs with common chord progressions. View lyrics, transpose keys, reorder songs, and share custom arrangements via URL.
 
 ## Features
 
