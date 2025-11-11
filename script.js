@@ -5,20 +5,73 @@ let draggedElement = null;
 let draggedIndex = null;
 let currentProgression = '1-2m-6m-4'; // Default progression
 let progressionConfig = null;
-let availableProgressions = ['1-2m-6m-4', '1-5-6m-4', '1-6m-4-5'];
+let allProgressions = []; // Loaded from config.json
+let configData = null; // Full config object
 
 // Initialize
+console.log('🔷 script.js loaded and executing');
+console.log('🔷 About to set up DOMContentLoaded listener');
+
 document.addEventListener('DOMContentLoaded', async () => {
-    applyProgressionFromURL();
-    await loadProgressionConfig();
-    await loadSongs();
-    applyOrderFromURL();
-    renderSongs();
-    setupTransposeButtons();
-    setupBannerClick();
-    setupEditButton();
-    updateChordDisplay();
+    console.log('🚀 DOMContentLoaded fired!');
+    try {
+        console.log('🚀 Starting initialization...');
+        
+        console.log('⏳ About to loadConfig...');
+        await loadConfig();
+        console.log('✓ Config loaded');
+        
+        console.log('⏳ About to applyProgressionFromURL...');
+        applyProgressionFromURL();
+        console.log('✓ Progression from URL applied');
+        
+        console.log('⏳ About to loadProgressionConfig...');
+        await loadProgressionConfig();
+        console.log('✓ Progression config loaded');
+        
+        console.log('⏳ About to loadSongs...');
+        await loadSongs();
+        console.log('✓ Songs loaded:', songs.length);
+        
+        console.log('⏳ About to applyOrderFromURL...');
+        applyOrderFromURL();
+        console.log('✓ Order from URL applied');
+        
+        console.log('⏳ About to renderSongs...');
+        renderSongs();
+        console.log('✓ Songs rendered');
+        
+        console.log('⏳ About to setupTransposeButtons...');
+        setupTransposeButtons();
+        console.log('✓ Transpose buttons setup');
+        
+        console.log('⏳ About to setupBannerClick...');
+        setupBannerClick();
+        console.log('✓ Banner click setup');
+        
+        console.log('⏳ About to setupEditButton...');
+        setupEditButton();
+        console.log('✓ Edit button setup');
+        
+        console.log('⏳ About to updateChordDisplay...');
+        updateChordDisplay();
+        console.log('✓ Chord display updated');
+        
+        console.log('✅ Initialization complete!');
+    } catch (error) {
+        console.error('❌ Fatal error during initialization:', error);
+        console.error('❌ Error stack:', error.stack);
+        document.getElementById('songs-container').innerHTML = `
+            <div style="padding: 20px; text-align: center; color: red;">
+                <h3>Error loading site</h3>
+                <p>${error.message}</p>
+                <p>Check the browser console for details.</p>
+            </div>
+        `;
+    }
 });
+
+console.log('🔷 DOMContentLoaded listener registered');
 
 // Chromatic scale
 const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -30,104 +83,188 @@ const noteToIndex = {
     'A': 9, 'A#': 10, 'Bb': 10, 'B': 11
 };
 
-// Load progression config
-async function loadProgressionConfig() {
+// Load main config file
+async function loadConfig() {
     try {
-        console.log('Loading progression config for:', currentProgression);
-        const response = await fetch(`progressions/${currentProgression}/config.json`);
+        const response = await fetch('config.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        progressionConfig = await response.json();
-        console.log('Loaded config:', progressionConfig);
+        configData = await response.json();
+        allProgressions = configData.progressions;
+        console.log('Loaded config:', configData);
+    } catch (error) {
+        console.error('Error loading config:', error);
+        alert('Error loading config.json. Make sure you\'re running a local server!');
+    }
+}
+
+// Load progression config for current progression
+async function loadProgressionConfig() {
+    try {
+        console.log('Loading progression config for:', currentProgression);
+        
+        // Find the progression in allProgressions
+        progressionConfig = allProgressions.find(p => p.id === currentProgression);
+        
+        if (!progressionConfig) {
+            throw new Error(`Progression ${currentProgression} not found in config`);
+        }
+        
+        console.log('Loaded progression config:', progressionConfig);
         
         // Update banner
-        document.getElementById('banner-image').src = `progressions/${currentProgression}/banner.png`;
+        document.getElementById('banner-image').src = progressionConfig.image;
     } catch (error) {
         console.error('Error loading progression config:', error);
         alert('Error loading progression config. Make sure you\'re running a local server!');
     }
 }
 
-// Load all songs from the current progression's song files
+// Load all songs from the current progression's Google Doc
 async function loadSongs() {
     const loading = document.getElementById('loading');
     loading.classList.add('show');
 
     try {
-        console.log('Loading songs from:', `progressions/${currentProgression}/`);
-        songs = [];
-        
-        // Try to load song-1.md through song-20.md
-        for (let i = 1; i <= 20; i++) {
-            try {
-                const response = await fetch(`progressions/${currentProgression}/song-${i}.md`);
-                if (response.ok) {
-                    const text = await response.text();
-                    const song = parseSongMarkdown(text);
-                    if (song.title) {
-                        songs.push(song);
-                    }
-                } else if (response.status === 404) {
-                    // File doesn't exist, continue checking next files
-                    continue;
-                } else {
-                    // Other error, stop
-                    break;
-                }
-            } catch (error) {
-                // Network error or file doesn't exist, continue
-                console.log(`Song ${i} not found, continuing...`);
-                continue;
-            }
+        if (!progressionConfig || !progressionConfig.url) {
+            throw new Error('No URL configured for current progression');
         }
+        
+        console.log('Loading songs from Google Doc:', progressionConfig.url);
+        
+        const response = await fetch(progressionConfig.url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const html = await response.text();
+        songs = parseGoogleDocHTML(html);
         
         console.log('Loaded songs:', songs.length);
         
         if (songs.length === 0) {
-            console.error('No songs loaded! Check file paths.');
+            console.error('No songs loaded! Check Google Doc format.');
+            console.log('Google Doc HTML preview:', html.substring(0, 1000));
         }
         
         // Initialize order as 0, 1, 2, 3...
         currentOrder = songs.map((_, index) => index);
     } catch (error) {
         console.error('Error loading songs:', error);
+        // Don't show alert - just log the error and show empty state
+        songs = [];
+        currentOrder = [];
     } finally {
         loading.classList.remove('show');
     }
 }
 
-// Parse markdown with frontmatter
-function parseSongMarkdown(text) {
-    const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
-    const match = text.match(frontmatterRegex);
-
-    if (!match) {
-        return {
-            title: '',
-            artist: 'Unknown',
-            lyrics: text
-        };
+// Parse Google Docs HTML to extract songs
+// IMPORTANT: We parse as TEXT, not DOM, to avoid triggering navigation/meta tags!
+function parseGoogleDocHTML(html) {
+    console.log('Parsing Google Doc HTML...');
+    
+    // Step 1: Remove dangerous elements that could cause navigation
+    let text = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+    text = text.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+    text = text.replace(/<meta[^>]*>/gi, '');
+    
+    // Step 2: Strip HTML tags
+    text = text.replace(/<br\s*\/?>/gi, '\n');
+    text = text.replace(/<\/p>/gi, '\n');
+    text = text.replace(/<[^>]+>/g, '');
+    
+    // Step 3: Decode HTML entities
+    text = text.replace(/&nbsp;/g, ' ');
+    text = text.replace(/&amp;/g, '&');
+    text = text.replace(/&lt;/g, '<');
+    text = text.replace(/&gt;/g, '>');
+    text = text.replace(/&quot;/g, '"');
+    text = text.replace(/&#39;/g, "'");
+    
+    console.log('Processed text preview:', text.substring(0, 500));
+    
+    // Step 4: Find first "Title:" and last "==="
+    const firstTitleIndex = text.indexOf('Title:');
+    const lastSeparatorIndex = text.lastIndexOf('===');
+    
+    if (firstTitleIndex === -1) {
+        console.error('No "Title:" found in document');
+        return [];
     }
-
-    const frontmatter = match[1];
-    const lyrics = match[2];
-
-    // Parse frontmatter
-    const titleMatch = frontmatter.match(/title:\s*["'](.*)["']/);
-    const artistMatch = frontmatter.match(/artist:\s*["'](.*)["']/);
-
-    return {
-        title: titleMatch ? titleMatch[1] : '',
-        artist: artistMatch ? artistMatch[1] : 'Unknown',
-        lyrics: convertMarkdownToHTML(lyrics.trim())
-    };
-}
-
-// Convert basic markdown to HTML (bold text)
-function convertMarkdownToHTML(text) {
-    // Convert **bold** to <strong>bold</strong>
-    return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    
+    // Extract relevant section (between first Title: and ===, or to end if no ===)
+    let relevantContent = lastSeparatorIndex > firstTitleIndex 
+        ? text.substring(firstTitleIndex, lastSeparatorIndex)
+        : text.substring(firstTitleIndex);
+    
+    console.log('Relevant content preview:', relevantContent.substring(0, 300));
+    
+    // Step 5: Split by "Title:" but keep the delimiter
+    const songChunks = relevantContent.split(/(?=Title:)/);
+    const songs = [];
+    
+    for (const chunk of songChunks) {
+        if (!chunk.trim()) continue;
+        
+        // Parse each song - keep empty lines for verse breaks
+        const lines = chunk.split('\n').map(line => line.trim());
+        
+        let title = '';
+        let artist = 'Unknown';
+        let lyrics = [];
+        let inNotesSection = false;
+        let lastLineWasEmpty = false;
+        
+        for (const line of lines) {
+            if (line.startsWith('Title:')) {
+                title = line.replace('Title:', '').trim();
+                inNotesSection = false;
+                lastLineWasEmpty = false;
+            } else if (line.startsWith('Artist:')) {
+                artist = line.replace('Artist:', '').trim();
+                inNotesSection = false;
+                lastLineWasEmpty = false;
+            } else if (line.includes('===')) {
+                // Any line with === starts an ignored section
+                inNotesSection = true;
+                lastLineWasEmpty = false;
+            } else if (title && !inNotesSection) {
+                // Process lyrics - preserve blank lines but limit to 1 consecutive
+                if (line === '') {
+                    // Empty line - only add if last line wasn't empty
+                    if (!lastLineWasEmpty && lyrics.length > 0) {
+                        lyrics.push('');
+                        lastLineWasEmpty = true;
+                    }
+                } else {
+                    // Non-empty line - always add
+                    lyrics.push(line);
+                    lastLineWasEmpty = false;
+                }
+            }
+        }
+        
+        if (title) {
+            // Trim leading/trailing empty lines
+            while (lyrics.length > 0 && lyrics[0] === '') {
+                lyrics.shift();
+            }
+            while (lyrics.length > 0 && lyrics[lyrics.length - 1] === '') {
+                lyrics.pop();
+            }
+            
+            songs.push({
+                title,
+                artist,
+                lyrics: lyrics.join('\n')
+            });
+        }
+    }
+    
+    console.log('Parsed songs:', songs.length);
+    return songs;
 }
 
 // Apply progression from URL parameter
@@ -135,7 +272,7 @@ function applyProgressionFromURL() {
     const urlParams = new URLSearchParams(window.location.search);
     const progressionParam = urlParams.get('progression');
 
-    if (progressionParam && availableProgressions.includes(progressionParam)) {
+    if (progressionParam && allProgressions.some(p => p.id === progressionParam)) {
         currentProgression = progressionParam;
     }
 }
@@ -174,12 +311,21 @@ function applyOrderFromURL() {
 
 // Update URL with current progression, key, and order
 function updateURL() {
-    const orderString = currentOrder.join(',');
-    const url = new URL(window.location);
-    url.searchParams.set('progression', currentProgression);
-    url.searchParams.set('key', progressionConfig.key);
-    url.searchParams.set('order', orderString);
-    window.history.pushState({}, '', url);
+    try {
+        if (!progressionConfig || !progressionConfig.key) {
+            console.warn('Cannot update URL: progressionConfig not ready');
+            return;
+        }
+        const orderString = currentOrder.join(',');
+        const url = new URL(window.location);
+        url.searchParams.set('progression', currentProgression);
+        url.searchParams.set('key', progressionConfig.key);
+        url.searchParams.set('order', orderString);
+        window.history.pushState({}, '', url);
+        console.log('URL updated:', url.toString());
+    } catch (error) {
+        console.error('Error updating URL:', error);
+    }
 }
 
 // Render songs in the grid
@@ -469,11 +615,13 @@ function handleTouchEnd(e) {
 
 // Transpose functions
 function setupTransposeButtons() {
-    document.getElementById('transpose-up').addEventListener('click', () => {
+    document.getElementById('transpose-up').addEventListener('click', (e) => {
+        e.preventDefault();
         transposeKey(1);
     });
 
-    document.getElementById('transpose-down').addEventListener('click', () => {
+    document.getElementById('transpose-down').addEventListener('click', (e) => {
+        e.preventDefault();
         transposeKey(-1);
     });
 }
@@ -558,7 +706,7 @@ function parseRomanNumeral(roman) {
 function updateChordDisplay() {
     if (!progressionConfig) return;
     
-    const chords = parseChordNotation(progressionConfig.chords, progressionConfig.key);
+    const chords = parseChordNotation(progressionConfig.progression, progressionConfig.key);
     
     // Update the chord display
     for (let i = 0; i < chords.length && i < 4; i++) {
@@ -570,8 +718,8 @@ function updateChordDisplay() {
     
     // Update subtitle to show the roman numerals (keep the button!)
     const subtitle = document.querySelector('.subtitle');
-    if (subtitle && progressionConfig.chords) {
-        const romanNumerals = progressionConfig.chords.replace(/\s+/g, ' • ');
+    if (subtitle && progressionConfig.progression) {
+        const romanNumerals = progressionConfig.progression.replace(/\s+/g, ' • ');
         // Only update the text node, not the entire content (preserve the button)
         const textNode = Array.from(subtitle.childNodes).find(node => node.nodeType === 3);
         if (textNode) {
@@ -587,24 +735,28 @@ function updateChordDisplay() {
 // Setup banner click to reset to defaults
 function setupBannerClick() {
     document.querySelector('.banner').addEventListener('click', async () => {
-        // Reset to default progression
-        currentProgression = '1-2m-6m-4';
-        
-        // Reload everything
-        await loadProgressionConfig();
-        await loadSongs();
-        
-        // Reset order
-        currentOrder = songs.map((_, index) => index);
-        
-        // Update display
-        updateChordDisplay();
-        renderSongs();
-        
-        // Clear URL parameters
-        const url = new URL(window.location);
-        url.search = '';
-        window.history.pushState({}, '', url);
+        try {
+            console.log('Banner clicked - resetting to defaults');
+            // Reset to default progression
+            currentProgression = '1-2m-6m-4';
+            
+            // Reload everything
+            await loadProgressionConfig();
+            await loadSongs();
+            
+            // Reset order
+            currentOrder = songs.map((_, index) => index);
+            
+            // Update display
+            updateChordDisplay();
+            renderSongs();
+            
+            // Clear URL parameters
+            window.history.pushState({}, '', window.location.pathname);
+            console.log('Reset complete');
+        } catch (error) {
+            console.error('Error during banner click reset:', error);
+        }
     });
 }
 
@@ -620,30 +772,23 @@ function setupEditButton() {
 async function showProgressionModal() {
     const modal = document.getElementById('progression-modal');
     
-    // Load all progression configs and populate the modal
+    // Populate the modal with progressions from config
     const modalContent = modal.querySelector('.progression-modal-content');
     let optionsHTML = '<span class="close-button" onclick="closeProgressionModal()">×</span><h2>Choose Progression</h2>';
     
-    for (const progressionId of availableProgressions) {
-        try {
-            const response = await fetch(`progressions/${progressionId}/config.json`);
-            const config = await response.json();
-            
-            const isSelected = progressionId === currentProgression ? 'selected' : '';
-            const romanNumerals = config.chords.replace(/\s+/g, ' • ');
-            
-            optionsHTML += `
-                <div class="progression-option ${isSelected}" data-progression="${progressionId}" onclick="switchProgression('${progressionId}')">
-                    <div class="progression-radio"></div>
-                    <div class="progression-info">
-                        <div class="progression-name">${config.name}</div>
-                        <div class="progression-chords">${romanNumerals}</div>
-                    </div>
+    for (const progression of allProgressions) {
+        const isSelected = progression.id === currentProgression ? 'selected' : '';
+        const romanNumerals = progression.progression.replace(/\s+/g, ' • ');
+        
+        optionsHTML += `
+            <div class="progression-option ${isSelected}" data-progression="${progression.id}" onclick="switchProgression('${progression.id}')">
+                <div class="progression-radio"></div>
+                <div class="progression-info">
+                    <div class="progression-name">${progression.title}</div>
+                    <div class="progression-chords">${romanNumerals}</div>
                 </div>
-            `;
-        } catch (error) {
-            console.error(`Error loading config for ${progressionId}:`, error);
-        }
+            </div>
+        `;
     }
     
     modalContent.innerHTML = optionsHTML;

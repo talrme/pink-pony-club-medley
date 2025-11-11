@@ -62,56 +62,145 @@ Then open: http://localhost:8000
 
 ```
 pink-pony-club-medley/
-├── index.html              # Main HTML file
-├── styles.css              # All styling
-├── script.js               # All functionality
-└── progressions/           # Progression data
-    ├── 1-2m-6m-4/         # I-ii-vi-IV progression
-    │   ├── config.json    # Name, chords, key
-    │   ├── banner.png     # Header image
-    │   └── song-*.md      # Individual song files
-    ├── 1-5-6m-4/          # I-V-vi-IV progression
-    └── 1-6m-4-5/          # I-vi-IV-V progression
+├── index.html           # Main HTML file
+├── styles.css           # All styling
+├── script.js            # All functionality
+├── config.json          # All progressions configuration
+├── banner-pony.png      # Pink Pony Club banner
+├── banner-axis.png      # Axis of Awesome banner
+└── banner-50s.png       # 50s Progression banner
 ```
 
-## Adding New Content
+## Managing Content
 
-### Adding a New Song
+Songs are stored in Google Docs (one doc per progression) and loaded dynamically. This makes it easy to add, edit, or remove songs without touching code.
 
-Create a new file `song-N.md` in the progression folder:
+### Google Doc Format
 
-```markdown
----
-title: "Song Title"
-artist: "Artist Name"
----
+Each progression has its own Google Doc with this format:
 
-Verse lyrics here
-**Bold lines for emphasis**
-More lyrics here
 ```
+[Any intro text or notes - will be ignored]
+
+Title: Don't Stop Believin'
+Artist: Journey
+
+Just a small town girl
+Living in a lonely world
+She took the midnight train going anywhere
+
+A singer in a smokey room
+The smell of wine and cheap perfume
+For a smile they can share the night
+
+Title: Africa
+Artist: Toto
+
+I hear the drums echoing tonight
+But she hears only whispers of some quiet conversation
+
+She's coming in, 12:30 flight
+The moonlit wings reflect the stars that guide me towards salvation
+
+===
+[Everything after === is ignored - put notes, attributions, etc. here]
+```
+
+**Format Rules:**
+- Everything before the first `Title:` is ignored
+- Each song starts with `Title:` followed by the song name
+- Next line should be `Artist:` followed by the artist name
+- All remaining lines until the next `Title:` are lyrics
+- **Bold text is preserved** - select text and press Ctrl+B (or ⌘+B on Mac)
+- Blank lines between songs are optional
+- Any line with `===` (3+ equals signs) starts a comment section that won't appear on the site
+
+### Adding or Editing Songs
+
+1. Open the Google Doc for your progression
+2. Add a new song using the format:
+   ```
+   Title: Your Song Title
+   Artist: Artist Name
+   
+   Lyrics go here
+   More lyrics with bold text
+   ```
+3. Wait 1-5 minutes for Google Docs to update the published version
+4. Refresh the website to see your changes
+
+**Tips:**
+- **Bold text:** Select text in Google Docs and press Ctrl+B (⌘+B on Mac) - it will appear bold on the site
+- You can add intro notes at the top (before first `Title:`)
+- Add notes/attributions after `===` at the bottom
+- Changes appear automatically once published version updates
+
+### Adding Comments Between Songs
+
+You can add notes that won't appear on the website using `===`:
+
+```
+Title: Song One
+Artist: Artist One
+
+Lyrics for song one...
+
+===
+This is a personal note about the song
+It won't appear on the website
+You can write multiple lines here
+
+Title: Song Two
+Artist: Artist Two
+
+Lyrics for song two...
+
+===
+Another comment here
+Everything after === is ignored until the next Title:
+
+Title: Song Three
+Artist: Artist Three
+
+More lyrics...
+
+===
+End notes and credits can go here at the bottom
+```
+
+**Comment sections (get ignored):**
+- Any line with `===` (3+ equals signs) - Starts an ignored section until next `Title:`
+- Text before first `Title:` - Intro notes at top of doc
 
 ### Adding a New Progression
 
-1. Create a new folder in `progressions/`
-2. Add `config.json`:
+1. Create a Google Doc with your songs (use format above)
+2. Publish the doc: `File > Share > Publish to web > Publish`
+3. Copy the published URL
+4. Add a 1200x300px banner image to the root directory (e.g., `banner-myname.png`)
+5. Edit `config.json` and add your progression:
    ```json
    {
-     "name": "Progression Name",
-     "chords": "I V vi IV",
-     "key": "C"
+     "id": "unique-id",
+     "title": "Display Name",
+     "progression": "I V vi IV",
+     "key": "C",
+     "image": "banner-myname.png",
+     "url": "https://docs.google.com/document/d/e/YOUR_PUBLISHED_ID/pub"
    }
    ```
-3. Add `banner.png` (1200x300px recommended)
-4. Add song files (`song-1.md`, `song-2.md`, etc.)
-5. Update `availableProgressions` array in `script.js`
 
 ### Config File Format
 
-- **name**: Display name for the progression
-- **chords**: Roman numerals (uppercase = major, lowercase = minor)
+The `config.json` file in the root directory contains all progressions:
+
+- **id**: Unique identifier (used in URLs)
+- **title**: Display name shown in the progression selector
+- **progression**: Roman numerals (uppercase = major, lowercase = minor)
   - Examples: `"I IV V"`, `"I ii vi IV"`, `"vi IV I V"`
 - **key**: Starting key (C, F#, Bb, etc.)
+- **image**: Banner image filename (in root directory)
+- **url**: Published Google Doc URL
 
 ## Technical Details
 

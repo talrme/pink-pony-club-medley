@@ -1,0 +1,31 @@
+{
+  "defaultProgression": "1-2m-6m-4",
+  "progressions": [
+    {
+      "id": "1-2m-6m-4",
+      "title": "Pink Pony Club Medley",
+      "progression": "I ii vi IV",
+      "key": "F#",
+      "image": "banner-pony.png",
+      "url": "https://docs.google.com/document/d/e/2PACX-1vR2Fx3t24WIe_qHO0nokrnhRzMjYLw4zSpxYQ-uo3QzxfHWBLMVbkzHRVy5Zk3tcaZ3lkPbcWWQOhbA/pub"
+    },
+    {
+      "id": "1-5-6m-4",
+      "title": "Axis of Awesome",
+      "progression": "I V vi IV",
+      "key": "C",
+      "image": "banner-axis.png",
+      "url": "https://docs.google.com/document/d/e/2PACX-1vR2Fx3t24WIe_qHO0nokrnhRzMjYLw4zSpxYQ-uo3QzxfHWBLMVbkzHRVy5Zk3tcaZ3lkPbcWWQOhbA/pub"
+    },
+    {
+      "id": "1-6m-4-5",
+      "title": "50s Progression",
+      "progression": "I vi IV V",
+      "key": "C",
+      "image": "banner-50s.png",
+      "url": "https://docs.google.com/document/d/e/2PACX-1vR2Fx3t24WIe_qHO0nokrnhRzMjYLw4zSpxYQ-uo3QzxfHWBLMVbkzHRVy5Zk3tcaZ3lkPbcWWQOhbA/pub"
+    }
+  ]
+}
+
+
