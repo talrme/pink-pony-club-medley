@@ -53,6 +53,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         setupEditButton();
         console.log('✓ Edit button setup');
         
+        console.log('⏳ About to setupBottomBarButtons...');
+        setupBottomBarButtons();
+        console.log('✓ Bottom bar buttons setup');
+        
         console.log('⏳ About to updateChordDisplay...');
         updateChordDisplay();
         console.log('✓ Chord display updated');
@@ -768,6 +772,41 @@ function setupEditButton() {
     const editButton = document.getElementById('edit-progression');
     if (editButton) {
         editButton.addEventListener('click', showProgressionModal);
+    }
+}
+
+// Setup bottom bar buttons
+function setupBottomBarButtons() {
+    // Change Progression button
+    const changeProgressionBtn = document.getElementById('change-progression-btn');
+    if (changeProgressionBtn) {
+        changeProgressionBtn.addEventListener('click', showProgressionModal);
+    }
+    
+    // Info button
+    const infoBtn = document.getElementById('info-btn');
+    const infoModal = document.getElementById('info-modal');
+    const closeInfoBtn = document.getElementById('close-info-modal');
+    
+    if (infoBtn && infoModal) {
+        infoBtn.addEventListener('click', () => {
+            infoModal.style.display = 'flex';
+        });
+    }
+    
+    if (closeInfoBtn && infoModal) {
+        closeInfoBtn.addEventListener('click', () => {
+            infoModal.style.display = 'none';
+        });
+    }
+    
+    // Close info modal when clicking outside
+    if (infoModal) {
+        infoModal.addEventListener('click', (e) => {
+            if (e.target === infoModal) {
+                infoModal.style.display = 'none';
+            }
+        });
     }
 }
 

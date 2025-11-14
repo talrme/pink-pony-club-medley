@@ -19,8 +19,8 @@ body {
 
 /* Banner */
 .banner {
-    width: 100%;
-    margin-bottom: 30px;
+    max-width: 800px;
+    margin: 0 auto 30px;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -313,12 +313,12 @@ header {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     animation: fadeIn 0.3s;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal.show {
     display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .modal-content {
@@ -473,5 +473,108 @@ header {
     .drag-handle {
         font-size: 1.2rem;
     }
+}
+
+/* Bottom Bar */
+.bottom-bar {
+    background: linear-gradient(135deg, #f5f3ff 0%, #e9e3ff 100%);
+    border: 1px solid #d4c5f9;
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 800px;
+    margin: 20px auto;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+}
+
+.bottom-bar-button {
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+}
+
+.bottom-bar-button:hover {
+    background: #a78bfa;
+    color: white;
+    border-color: #a78bfa;
+}
+
+.bottom-bar-button:active {
+    transform: scale(0.98);
+}
+
+/* Info Modal */
+.info-modal-content {
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.info-modal-content h3 {
+    color: #FF69B4;
+    margin-bottom: 16px;
+    font-size: 1.5rem;
+}
+
+.info-modal-content h4 {
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+
+.info-modal-content p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.info-modal-content ul {
+    margin: 0 0 16px 0;
+    padding-left: 24px;
+}
+
+.info-modal-content li {
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 8px;
+}
+
+.info-modal-content a {
+    color: #FF69B4;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.info-modal-content a:hover {
+    color: #FF1493;
+    text-decoration: underline;
+}
+
+.progression-links {
+    list-style: none;
+    padding-left: 0;
+}
+
+.progression-links li {
+    padding-left: 24px;
+    position: relative;
+}
+
+.progression-links li:before {
+    content: "🎵";
+    position: absolute;
+    left: 0;
 }
 

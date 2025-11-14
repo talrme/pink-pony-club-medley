@@ -46,6 +46,44 @@
             </div>
         </div>
 
+        <!-- Info Modal -->
+        <div id="info-modal" class="modal">
+            <div class="modal-content info-modal-content">
+                <span class="close-button" id="close-info-modal">&times;</span>
+                <h3>About This Page</h3>
+                <p>Chord progression fun for singing circle!</p>
+                
+                <h4>How to use:</h4>
+                <ul>
+                    <li>Use the <strong>+</strong> and <strong>−</strong> buttons to transpose chords to your preferred key</li>
+                    <li>Drag songs to reorder them</li>
+                    <li>Click the gear icon to switch between different progressions</li>
+                    <li>Settings are saved in the URL so you can share your custom arrangement and save an icon to your phone's home screen</li>
+                </ul>
+
+                <h4>Source Data (Google Docs):</h4>
+                <ul class="progression-links">
+                    <li><a href="https://docs.google.com/document/d/e/2PACX-1vR2Fx3t24WIe_qHO0nokrnhRzMjYLw4zSpxYQ-uo3QzxfHWBLMVbkzHRVy5Zk3tcaZ3lkPbcWWQOhbA/pub" target="_blank">Pink Pony Club Medley (I ii vi IV)</a></li>
+                    <li><a href="https://docs.google.com/document/d/e/2PACX-1vTD_CWKD9dfHVpMghVjH4jsomjpj4rQc6qE5ckk5x_8e_Ymn3WjeFwZXPTIgLTGDogJNjTemigBwnua/pub" target="_blank">Let It Be (I V vi IV)</a></li>
+                    <li><a href="https://docs.google.com/document/d/e/2PACX-1vQoUgbmKfNIBvcXt2VZWIZXwA9C4HaIxQlpxaa-3UMtxBFSqm2TjqGITSayCDAH_KIDfGremudylJvt/pub" target="_blank">Let It Be Medley (I vi IV V)</a></li>
+                </ul>
+
+                
+            </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="bottom-bar">
+            <button type="button" class="bottom-bar-button" id="change-progression-btn">
+                <span>⚙️</span>
+                <span>Change Progression</span>
+            </button>
+            <button type="button" class="bottom-bar-button" id="info-btn">
+                <span>ℹ️</span>
+                <span>Info</span>
+            </button>
+        </div>
+
         <!-- Loading Indicator -->
         <div id="loading" class="loading">Loading songs...</div>
     </div>
