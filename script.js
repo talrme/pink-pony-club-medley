@@ -226,6 +226,9 @@ function parseGoogleDocHTML(html) {
                 artist = line.replace('Artist:', '').trim();
                 inNotesSection = false;
                 lastLineWasEmpty = false;
+            } else if (line.startsWith('Lyrics:')) {
+                // Skip "Lyrics:" label - it's not actual lyrics content
+                lastLineWasEmpty = false;
             } else if (line.includes('===')) {
                 // Any line with === starts an ignored section
                 inNotesSection = true;
