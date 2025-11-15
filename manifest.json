@@ -1,6 +1,6 @@
 {
-  "name": "Pink Pony Club Medley",
-  "short_name": "Chord Medley",
+  "name": "Medlies",
+  "short_name": "Medlies",
   "description": "Chord progression and lyrics viewer",
   "icons": [
     {
@@ -16,7 +16,7 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "/",
+  "start_url": "/pink-pony-club-medley/",
   "display": "standalone",
   "theme_color": "#8b5cf6",
   "background_color": "#8b5cf6",
