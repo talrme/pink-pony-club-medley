@@ -64,6 +64,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         setupBottomBarButtons();
         console.log('✓ Bottom bar buttons setup');
         
+        console.log('⏳ About to setupHeaderScrollDetection...');
+        setupHeaderScrollDetection();
+        console.log('✓ Header scroll detection set up');
+        
         console.log('⏳ Loading saved settings...');
         loadSettings();
         console.log('✓ Settings loaded');
@@ -1213,5 +1217,11 @@ async function switchProgression(newProgression) {
     updateURL();
     
     closeProgressionModal();
+}
+
+// Setup header scroll detection - simple sticky header, no visual effects
+function setupHeaderScrollDetection() {
+    // Simple sticky header - no gradient effects needed
+    // The position: sticky in CSS handles everything
 }
 
