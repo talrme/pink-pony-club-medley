@@ -14,6 +14,7 @@ let lockedSongs = new Set(); // Track which songs are locked open
 let currentTheme = 'default'; // Default theme (original purple gradient)
 let fontSize = 'medium'; // Default font size
 let hideArtists = false; // Default: show artists
+let stickyChords = true; // Default: chords stick to top when scrolling
 
 // Initialize
 console.log('🔷 script.js loaded and executing');
@@ -356,6 +357,9 @@ function updateURL() {
         
         if (hideArtists) url.searchParams.set('hideArtists', '1');
         else url.searchParams.delete('hideArtists');
+        
+        if (!stickyChords) url.searchParams.set('stickyChords', '0');
+        else url.searchParams.delete('stickyChords');
         
         window.history.pushState({}, '', url);
         console.log('URL updated:', url.toString());
@@ -1021,6 +1025,24 @@ function loadSettings() {
     if (hideArtists) {
         document.body.classList.add('hide-artists');
     }
+    
+    // Sticky chords
+    if (urlParams.has('stickyChords')) {
+        stickyChords = urlParams.get('stickyChords') === '1';
+    } else {
+        const savedStickyChords = localStorage.getItem('stickyChords');
+        if (savedStickyChords !== null) {
+            stickyChords = savedStickyChords === 'true';
+        }
+    }
+    
+    // Apply sticky chords setting
+    const header = document.querySelector('header');
+    if (header) {
+        if (!stickyChords) {
+            header.classList.add('not-sticky');
+        }
+    }
 }
 
 // Initialize settings UI when modal opens
@@ -1112,6 +1134,14 @@ function initializeSettingsUI() {
         hideArtistsToggle.removeEventListener('change', handleHideArtistsChange);
         hideArtistsToggle.addEventListener('change', handleHideArtistsChange);
     }
+    
+    // Set sticky chords toggle
+    const stickyChordsToggle = document.getElementById('sticky-chords-toggle');
+    if (stickyChordsToggle) {
+        stickyChordsToggle.checked = stickyChords;
+        stickyChordsToggle.removeEventListener('change', handleStickyChordsChange);
+        stickyChordsToggle.addEventListener('change', handleStickyChordsChange);
+    }
 }
 
 function handleAutoCloseChange(e) {
@@ -1149,6 +1179,23 @@ function handleHideArtistsChange(e) {
     } else {
         document.body.classList.remove('hide-artists');
     }
+    updateURL();
+}
+
+function handleStickyChordsChange(e) {
+    stickyChords = e.target.checked;
+    localStorage.setItem('stickyChords', stickyChords);
+    
+    // Update UI
+    const header = document.querySelector('header');
+    if (header) {
+        if (!stickyChords) {
+            header.classList.add('not-sticky');
+        } else {
+            header.classList.remove('not-sticky');
+        }
+    }
+    
     updateURL();
 }
 

@@ -53,6 +53,20 @@ header {
     padding-top: 10px;
 }
 
+/* Disable sticky positioning when setting is off */
+header.not-sticky {
+    position: relative;
+}
+
+/* Disable fade and subtitle hiding when not sticky */
+header.not-sticky::before {
+    display: none;
+}
+
+header.not-sticky.stuck .subtitle {
+    display: block;
+}
+
 /* Gradient fade background - hidden by default */
 header::before {
     content: '';
