@@ -53,6 +53,31 @@ header {
     padding-top: 10px;
 }
 
+/* Gradient fade background - hidden by default */
+header::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: transparent;
+    z-index: 99;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Show gradient only when stuck to top - starts with color at top, fades down */
+header.stuck::before {
+    opacity: 1;
+    background: linear-gradient(to bottom, 
+        rgba(139, 92, 246, 0.95) 0%,
+        rgba(139, 92, 246, 0.7) 40%, 
+        rgba(139, 92, 246, 0.4) 70%, 
+        transparent 100%);
+}
+
 /* Chord Transposer Pill */
 .transpose-pill {
     display: inline-flex;
@@ -63,6 +88,8 @@ header {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     font-size: 0.9rem;
     margin-bottom: 12px;
+    position: relative;
+    z-index: 101;
 }
 
 .transpose-pill .chords {
@@ -978,6 +1005,14 @@ body.theme-pink .chord {
     color: #C71585;
 }
 
+body.theme-pink header.stuck::before {
+    background: linear-gradient(to bottom, 
+        rgba(255, 105, 180, 0.95) 0%, 
+        rgba(255, 20, 147, 0.7) 40%, 
+        rgba(255, 20, 147, 0.4) 70%, 
+        transparent 100%);
+}
+
 body.theme-purple {
     background: linear-gradient(135deg, #9333ea 0%, #7c3aed 50%, #6d28d9 100%);
 }
@@ -1002,6 +1037,14 @@ body.theme-purple .transpose-pill {
 
 body.theme-purple .chord {
     color: #6d28d9;
+}
+
+body.theme-purple header.stuck::before {
+    background: linear-gradient(to bottom, 
+        rgba(147, 51, 234, 0.95) 0%, 
+        rgba(124, 58, 237, 0.7) 40%, 
+        rgba(124, 58, 237, 0.4) 70%, 
+        transparent 100%);
 }
 
 body.theme-blue {
@@ -1030,6 +1073,14 @@ body.theme-blue .chord {
     color: #1d4ed8;
 }
 
+body.theme-blue header.stuck::before {
+    background: linear-gradient(to bottom, 
+        rgba(96, 165, 250, 0.95) 0%, 
+        rgba(59, 130, 246, 0.7) 40%, 
+        rgba(59, 130, 246, 0.4) 70%, 
+        transparent 100%);
+}
+
 body.theme-sunset {
     background: linear-gradient(135deg, #fb923c 0%, #f97316 50%, #ea580c 100%);
 }
@@ -1054,6 +1105,14 @@ body.theme-sunset .transpose-pill {
 
 body.theme-sunset .chord {
     color: #c2410c;
+}
+
+body.theme-sunset header.stuck::before {
+    background: linear-gradient(to bottom, 
+        rgba(251, 146, 60, 0.95) 0%, 
+        rgba(249, 115, 22, 0.7) 40%, 
+        rgba(249, 115, 22, 0.4) 70%, 
+        transparent 100%);
 }
 
 body.theme-dark {
@@ -1205,6 +1264,14 @@ body.theme-dark .info-modal-content a {
 
 body.theme-dark .info-modal-content a:hover {
     color: #c4b5fd;
+}
+
+body.theme-dark header.stuck::before {
+    background: linear-gradient(to bottom, 
+        rgba(55, 65, 81, 0.95) 0%, 
+        rgba(31, 41, 55, 0.7) 40%, 
+        rgba(31, 41, 55, 0.4) 70%, 
+        transparent 100%);
 }
 
 /* Locked song indicator */

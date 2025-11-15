@@ -1247,9 +1247,31 @@ async function switchProgression(newProgression) {
     closeProgressionModal();
 }
 
-// Setup header scroll detection - simple sticky header, no visual effects
+// Setup header scroll detection using IntersectionObserver
 function setupHeaderScrollDetection() {
-    // Simple sticky header - no gradient effects needed
-    // The position: sticky in CSS handles everything
+    const header = document.querySelector('header');
+    const banner = document.querySelector('.banner');
+    
+    if (!header || !banner) return;
+    
+    // Observer watches when banner scrolls out of view
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach(entry => {
+                // When banner is NOT visible, header is stuck to top
+                if (!entry.isIntersecting) {
+                    header.classList.add('stuck');
+                } else {
+                    header.classList.remove('stuck');
+                }
+            });
+        },
+        {
+            threshold: 0,
+            rootMargin: '-1px 0px 0px 0px'
+        }
+    );
+    
+    observer.observe(banner);
 }
 
