@@ -216,6 +216,45 @@ pink-pony-club-medley/
 - `toggleAccordion(item)` - Handles expand/collapse logic
 - `renderSongs()` - Renders all songs in current order
 
+### 8. Mobile App Icons and PWA Configuration
+
+**Feature**: Custom app icons and Progressive Web App (PWA) configuration for when users save the site to their home screen (iOS/Android).
+
+**Implementation**:
+- Custom icon: 🎸 guitar emoji on purple gradient background (180x180px)
+- Icons stored in `phone-icons/` folder
+- Multiple sizes for different devices (180x180, 192x192, 512x512, etc.)
+- App title: "Medlies"
+
+**PWA Configuration** (`manifest.json`):
+- `name`: Full app name shown in "Add to Home Screen" dialog
+- `short_name`: Shorter name shown under icon on home screen
+- `start_url`: URL to open when tapping icon (`/pink-pony-club-medley/` for GitHub Pages)
+- `display`: How the app opens - **IMPORTANT**:
+  - `"browser"` (current): Opens in normal Safari/Chrome with browser UI - **sticky header works correctly**
+  - `"standalone"`: Opens like native app (no browser UI) - **sticky header has scroll issues**
+  - `"minimal-ui"`: Middle ground with minimal browser controls
+- `theme_color`: Browser UI color (#8b5cf6 purple)
+- `icons`: Array of icon paths and sizes
+- `orientation`: Locked to portrait mode
+
+**iOS Specific** (`index.html` meta tags):
+- `apple-touch-icon`: iOS home screen icons
+- `apple-mobile-web-app-title`: App title for iOS (set to "Medlies")
+- `apple-mobile-web-app-capable`: Enables full-screen mode
+- `apple-mobile-web-app-status-bar-style`: Status bar appearance
+
+**Why "browser" mode?**
+- In "standalone" mode, the viewport context changes and sticky positioning doesn't work correctly
+- Scrolling happens in a different container, causing the sticky header and gradient fade to malfunction
+- "browser" mode maintains normal Safari behavior where sticky CSS works as expected
+
+**Files**:
+- `manifest.json` - PWA configuration for Android/Chrome
+- `phone-icons/icon-180.png` - Main iOS home screen icon
+- `icon-generator.html` - Template for creating additional icon sizes
+- `index.html` - Contains all icon links and iOS meta tags
+
 ## Critical Issues and Solutions
 
 ### Issue #1: Page Crash (404 Error with Malformed URL)

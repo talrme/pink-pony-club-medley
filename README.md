@@ -93,6 +93,25 @@ Then open: http://localhost:8000
 - **Locked songs**: Use long-press to keep multiple songs open even in auto-close mode
 - **Sticky chords**: The chord transposer stays at the top when you scroll, so you can always see the chords
 - **Settings in URL**: All your settings are automatically saved in the URL, so bookmarks preserve your preferences
+- **Add to Home Screen**: Save as "Medlies" app on iOS/Android with custom 🎸 icon for quick access
+
+## Mobile App Installation
+
+### iOS (iPhone/iPad)
+1. Open the site in Safari
+2. Tap the Share button (square with arrow)
+3. Tap "Add to Home Screen"
+4. You'll see "Medlies" with the 🎸 guitar icon
+5. Tap "Add" - the app will open in Safari with full browser features
+
+### Android
+1. Open the site in Chrome
+2. Tap the menu (⋮) 
+3. Tap "Add to Home screen"
+4. Customize name if desired (default: "Medlies")
+5. The app will appear on your home screen with the 🎸 icon
+
+**Note**: The app opens in browser mode (not standalone) to ensure the sticky chord header and gradient fade work correctly. In standalone mode, the viewport behavior causes scroll issues with sticky positioning.
 
 ## Project Structure
 
