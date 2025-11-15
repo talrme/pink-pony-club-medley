@@ -1212,11 +1212,10 @@ body.theme-dark .info-modal-content a:hover {
     border-left: 4px solid #a78bfa;
 }
 
-.accordion-header.locked::after {
-    content: '📌';
-    position: absolute;
-    right: 50px;
-    font-size: 1rem;
+.accordion-header.locked .accordion-title::after {
+    content: ' 📌';
+    font-size: 0.9em;
+    margin-left: 6px;
 }
 
 /* Smaller buttons for 3-button layout */

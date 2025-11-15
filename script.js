@@ -447,12 +447,15 @@ function createSongCard(song, displayIndex) {
         pressTimer = setTimeout(() => {
             header.dataset.longPress = 'true';
             
+            // Get current index dynamically
+            const currentIndex = Array.from(document.querySelectorAll('.accordion-item')).indexOf(item);
+            
             // Toggle lock state
-            if (lockedSongs.has(index)) {
-                lockedSongs.delete(index);
+            if (lockedSongs.has(currentIndex)) {
+                lockedSongs.delete(currentIndex);
                 header.classList.remove('locked');
             } else {
-                lockedSongs.add(index);
+                lockedSongs.add(currentIndex);
                 header.classList.add('locked');
                 // Ensure it's expanded when locked
                 item.classList.add('active');
@@ -467,10 +470,15 @@ function createSongCard(song, displayIndex) {
     
     header.addEventListener('touchend', () => {
         clearTimeout(pressTimer);
+        // Reset longPress flag after a short delay to allow click handler to check it
+        setTimeout(() => {
+            header.dataset.longPress = 'false';
+        }, 100);
     });
     
     header.addEventListener('touchmove', () => {
         clearTimeout(pressTimer); // Cancel if user moves finger
+        header.dataset.longPress = 'false';
     });
     
     // Also support long-press on desktop (mousedown/mouseup)
@@ -483,11 +491,14 @@ function createSongCard(song, displayIndex) {
         pressTimer = setTimeout(() => {
             header.dataset.longPress = 'true';
             
-            if (lockedSongs.has(index)) {
-                lockedSongs.delete(index);
+            // Get current index dynamically
+            const currentIndex = Array.from(document.querySelectorAll('.accordion-item')).indexOf(item);
+            
+            if (lockedSongs.has(currentIndex)) {
+                lockedSongs.delete(currentIndex);
                 header.classList.remove('locked');
             } else {
-                lockedSongs.add(index);
+                lockedSongs.add(currentIndex);
                 header.classList.add('locked');
                 item.classList.add('active');
             }
@@ -496,10 +507,15 @@ function createSongCard(song, displayIndex) {
     
     header.addEventListener('mouseup', () => {
         clearTimeout(pressTimer);
+        // Reset longPress flag after a short delay to allow click handler to check it
+        setTimeout(() => {
+            header.dataset.longPress = 'false';
+        }, 100);
     });
     
     header.addEventListener('mouseleave', () => {
         clearTimeout(pressTimer);
+        header.dataset.longPress = 'false';
     });
 
     // Desktop drag - only from drag handle
@@ -1106,6 +1122,18 @@ function handleAutoCloseChange(e) {
     const tip = document.getElementById('auto-close-tip');
     if (tip) {
         tip.style.display = autoCloseMode ? 'block' : 'none';
+    }
+    
+    // When enabling auto-close, collapse all currently open songs
+    if (autoCloseMode) {
+        document.querySelectorAll('.accordion-item.active').forEach(item => {
+            item.classList.remove('active');
+        });
+        // Clear locked songs when enabling auto-close
+        lockedSongs.clear();
+        document.querySelectorAll('.accordion-header.locked').forEach(header => {
+            header.classList.remove('locked');
+        });
     }
     
     updateURL();

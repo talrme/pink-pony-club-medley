@@ -9,9 +9,11 @@ Explore songs with common chord progressions. View lyrics, transpose keys, reord
 ✨ **Multiple Chord Progressions**
 - Switch between different progressions (I-ii-vi-IV, I-V-vi-IV, I-vi-IV-V)
 - Each progression has its own collection of songs
+- Progression selector modal with visual previews
 
 🎹 **Interactive Chord Display**
 - Visual chord display with transpose buttons (+/-)
+- **Sticky header**: Chords stay visible at the top when scrolling
 - Roman numeral notation for music theory reference
 - Smart chord calculation from any key
 
@@ -20,22 +22,39 @@ Explore songs with common chord progressions. View lyrics, transpose keys, reord
 - Touch-friendly drag-and-drop reordering
 - Smooth scrolling and animations
 - Responsive design for all screen sizes
+- Auto-close mode option for cleaner mobile experience
 
 🔄 **Drag & Drop Reordering**
 - Reorder songs by dragging the handle (⋮⋮)
 - Touch support for mobile devices
 - Visual feedback during dragging
+- Order is saved in URL for sharing
+
+🔒 **Lock Songs Open (New!)**
+- **Long-press** any song title for 0.5 seconds to lock it open
+- Locked songs show a 📌 pin icon next to the title
+- In auto-close mode, locked songs stay open when others are clicked
+- Long-press again to unlock
+- Works on both desktop (mouse) and mobile (touch)
+
+⚙️ **Customizable Settings**
+- **Auto-close songs**: Toggle to only allow one song open at a time (great for mobile)
+- **Color themes**: Choose from 6 gradient themes (Original Purple, Pink, Purple, Blue, Sunset, Dark)
+- **Font size**: Select from 5 sizes (Extra Small to Extra Large) for lyrics
+- **Hide artist names**: Option to hide artist credits for a cleaner look
+- All settings saved in URL for sharing and persistence
 
 🔗 **Shareable URLs**
 - Share custom arrangements with unique URLs
-- URLs preserve progression, key, and song order
-- Example: `?progression=1-5-6m-4&key=C&order=0,2,1,3`
+- URLs preserve progression, key, song order, AND settings
+- Example: `?progression=1-5-6m-4&key=C&order=0,2,1,3&theme=pink&fontSize=large&autoClose=1`
 
 🎨 **Beautiful UI**
-- Purple gradient background
+- Multiple gradient color themes
 - Clean, modern card design
 - Smooth animations and transitions
-- Bottom action bar with quick access to progression switching and info
+- Bottom action bar with quick access to all controls
+- Info modal with documentation and links
 
 ## How to Use
 
@@ -55,12 +74,25 @@ Then open: http://localhost:8000
 1. **View Songs**: Click any song to expand and view lyrics
 2. **Transpose**: Use +/- buttons to change keys
 3. **Reorder**: Drag the ⋮⋮ handle to rearrange songs
-4. **Switch Progressions**: 
-   - Click the ⚙️ gear icon next to the progression name, OR
-   - Click the "⚙️ Change Progression" button at the bottom of the page
-5. **Info**: Click the "ℹ️ Info" button at the bottom to see page details and links to all song collections
-6. **Reset**: Click the banner to return to defaults
-7. **Share**: Copy the URL to share your custom arrangement
+4. **Lock Songs**: Long-press (0.5s) on a song title to lock it open with a 📌 pin
+5. **Switch Progressions**: 
+   - Click the 🎼 icon next to the progression name, OR
+   - Click the "🎼 Change Progression" button at the bottom of the page
+6. **Settings**: Click the "⚙️ Settings" button at the bottom to customize:
+   - Auto-close mode (one song at a time)
+   - Color theme (6 options)
+   - Lyrics font size (5 sizes)
+   - Hide/show artist names
+7. **Info**: Click the "ℹ️ Info" button at the bottom to see page details and links to all song collections
+8. **Reset**: Click the banner to return to defaults
+9. **Share**: Copy the URL to share your custom arrangement (includes all settings!)
+
+### Tips
+
+- **Auto-close mode**: When enabled, all open songs collapse immediately. Perfect for mobile browsing.
+- **Locked songs**: Use long-press to keep multiple songs open even in auto-close mode
+- **Sticky chords**: The chord transposer stays at the top when you scroll, so you can always see the chords
+- **Settings in URL**: All your settings are automatically saved in the URL, so bookmarks preserve your preferences
 
 ## Project Structure
 
