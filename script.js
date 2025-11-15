@@ -8,6 +8,13 @@ let progressionConfig = null;
 let allProgressions = []; // Loaded from config.json
 let configData = null; // Full config object
 
+// Settings state
+let autoCloseMode = false; // Default: allow multiple open
+let lockedSongs = new Set(); // Track which songs are locked open
+let currentTheme = 'default'; // Default theme (original purple gradient)
+let fontSize = 'medium'; // Default font size
+let hideArtists = false; // Default: show artists
+
 // Initialize
 console.log('🔷 script.js loaded and executing');
 console.log('🔷 About to set up DOMContentLoaded listener');
@@ -56,6 +63,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('⏳ About to setupBottomBarButtons...');
         setupBottomBarButtons();
         console.log('✓ Bottom bar buttons setup');
+        
+        console.log('⏳ Loading saved settings...');
+        loadSettings();
+        console.log('✓ Settings loaded');
         
         console.log('⏳ About to updateChordDisplay...');
         updateChordDisplay();
@@ -328,6 +339,20 @@ function updateURL() {
         url.searchParams.set('progression', currentProgression);
         url.searchParams.set('key', progressionConfig.key);
         url.searchParams.set('order', orderString);
+        
+        // Add settings to URL
+        if (autoCloseMode) url.searchParams.set('autoClose', '1');
+        else url.searchParams.delete('autoClose');
+        
+        if (currentTheme !== 'default') url.searchParams.set('theme', currentTheme);
+        else url.searchParams.delete('theme');
+        
+        if (fontSize !== 'medium') url.searchParams.set('fontSize', fontSize);
+        else url.searchParams.delete('fontSize');
+        
+        if (hideArtists) url.searchParams.set('hideArtists', '1');
+        else url.searchParams.delete('hideArtists');
+        
         window.history.pushState({}, '', url);
         console.log('URL updated:', url.toString());
     } catch (error) {
@@ -398,7 +423,79 @@ function createSongCard(song, displayIndex) {
             clickEnabled = true;
             return;
         }
+        // Don't toggle if this was a long press
+        if (header.dataset.longPress === 'true') {
+            header.dataset.longPress = 'false';
+            return;
+        }
         toggleAccordion(item);
+    });
+    
+    // Long-press to lock/unlock (touch and mouse)
+    let pressTimer;
+    
+    header.addEventListener('touchstart', (e) => {
+        // Only for header, not drag handle
+        if (e.target === dragHandle || e.target.closest('.drag-handle')) {
+            return;
+        }
+        header.dataset.longPress = 'false';
+        pressTimer = setTimeout(() => {
+            header.dataset.longPress = 'true';
+            
+            // Toggle lock state
+            if (lockedSongs.has(index)) {
+                lockedSongs.delete(index);
+                header.classList.remove('locked');
+            } else {
+                lockedSongs.add(index);
+                header.classList.add('locked');
+                // Ensure it's expanded when locked
+                item.classList.add('active');
+            }
+            
+            // Vibrate feedback (if supported)
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }, 500); // 500ms = long press
+    }, { passive: true });
+    
+    header.addEventListener('touchend', () => {
+        clearTimeout(pressTimer);
+    });
+    
+    header.addEventListener('touchmove', () => {
+        clearTimeout(pressTimer); // Cancel if user moves finger
+    });
+    
+    // Also support long-press on desktop (mousedown/mouseup)
+    header.addEventListener('mousedown', (e) => {
+        // Only for header, not drag handle
+        if (e.target === dragHandle || e.target.closest('.drag-handle')) {
+            return;
+        }
+        header.dataset.longPress = 'false';
+        pressTimer = setTimeout(() => {
+            header.dataset.longPress = 'true';
+            
+            if (lockedSongs.has(index)) {
+                lockedSongs.delete(index);
+                header.classList.remove('locked');
+            } else {
+                lockedSongs.add(index);
+                header.classList.add('locked');
+                item.classList.add('active');
+            }
+        }, 500);
+    });
+    
+    header.addEventListener('mouseup', () => {
+        clearTimeout(pressTimer);
+    });
+    
+    header.addEventListener('mouseleave', () => {
+        clearTimeout(pressTimer);
     });
 
     // Desktop drag - only from drag handle
@@ -435,15 +532,20 @@ function createSongCard(song, displayIndex) {
 // Toggle accordion open/close
 function toggleAccordion(item) {
     const wasActive = item.classList.contains('active');
+    const itemIndex = Array.from(document.querySelectorAll('.accordion-item')).indexOf(item);
     
     if (wasActive) {
         // If already open, just close it
         item.classList.remove('active');
     } else {
-        // Close all accordions
-        document.querySelectorAll('.accordion-item').forEach(i => {
-            i.classList.remove('active');
-        });
+        // Close all accordions (if auto-close mode, except locked ones)
+        if (autoCloseMode) {
+            document.querySelectorAll('.accordion-item').forEach((i, idx) => {
+                if (i !== item && !lockedSongs.has(idx)) {
+                    i.classList.remove('active');
+                }
+            });
+        }
         // Open this one
         item.classList.add('active');
     }
@@ -807,6 +909,249 @@ function setupBottomBarButtons() {
                 infoModal.style.display = 'none';
             }
         });
+    }
+    
+    // Settings button
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const closeSettingsBtn = document.getElementById('close-settings-modal');
+    
+    if (settingsBtn && settingsModal) {
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+            initializeSettingsUI();
+            setupScrollDetection();
+        });
+    }
+    
+    if (closeSettingsBtn && settingsModal) {
+        closeSettingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+    }
+    
+    // Bottom close button
+    const closeSettingsBottom = document.getElementById('close-settings-bottom');
+    if (closeSettingsBottom && settingsModal) {
+        closeSettingsBottom.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+    }
+    
+    // Close settings modal when clicking outside
+    if (settingsModal) {
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+        });
+    }
+}
+
+// Load saved settings from localStorage and URL (URL takes priority)
+function loadSettings() {
+    // First check URL parameters (they take priority)
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Auto-close mode
+    if (urlParams.has('autoClose')) {
+        autoCloseMode = urlParams.get('autoClose') === '1';
+    } else {
+        const savedAutoClose = localStorage.getItem('autoCloseMode');
+        if (savedAutoClose !== null) {
+            autoCloseMode = savedAutoClose === 'true';
+        }
+    }
+    
+    // Theme
+    if (urlParams.has('theme')) {
+        currentTheme = urlParams.get('theme');
+    } else {
+        const savedTheme = localStorage.getItem('colorTheme');
+        if (savedTheme) {
+            currentTheme = savedTheme;
+        }
+    }
+    
+    if (currentTheme !== 'default') {
+        document.body.classList.add(`theme-${currentTheme}`);
+    }
+    
+    // Font size
+    if (urlParams.has('fontSize')) {
+        fontSize = urlParams.get('fontSize');
+    } else {
+        const savedFontSize = localStorage.getItem('fontSize');
+        if (savedFontSize) {
+            fontSize = savedFontSize;
+        }
+    }
+    document.body.classList.add(`font-size-${fontSize}`);
+    
+    // Hide artists
+    if (urlParams.has('hideArtists')) {
+        hideArtists = urlParams.get('hideArtists') === '1';
+    } else {
+        const savedHideArtists = localStorage.getItem('hideArtists');
+        if (savedHideArtists !== null) {
+            hideArtists = savedHideArtists === 'true';
+        }
+    }
+    
+    if (hideArtists) {
+        document.body.classList.add('hide-artists');
+    }
+}
+
+// Initialize settings UI when modal opens
+function initializeSettingsUI() {
+    // Set initial theme preview
+    updateModalThemePreview(currentTheme);
+    
+    // Set auto-close toggle
+    const autoCloseToggle = document.getElementById('auto-close-toggle');
+    if (autoCloseToggle) {
+        autoCloseToggle.checked = autoCloseMode;
+        autoCloseToggle.removeEventListener('change', handleAutoCloseChange);
+        autoCloseToggle.addEventListener('change', handleAutoCloseChange);
+        
+        // Show/hide tip based on current state
+        const tip = document.getElementById('auto-close-tip');
+        if (tip) {
+            tip.style.display = autoCloseMode ? 'block' : 'none';
+        }
+    }
+    
+    // Set theme buttons
+    document.querySelectorAll('.theme-option').forEach(btn => {
+        const theme = btn.dataset.theme;
+        if (theme === currentTheme) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+        btn.removeEventListener('click', btn._themeClickHandler);
+        btn._themeClickHandler = () => {
+            currentTheme = theme;
+            localStorage.setItem('colorTheme', theme);
+            
+            // Update modal preview immediately
+            updateModalThemePreview(theme);
+            
+            // Update UI
+            document.body.className = '';
+            if (theme !== 'default') {
+                document.body.classList.add(`theme-${theme}`);
+            }
+            document.body.classList.add(`font-size-${fontSize}`);
+            if (hideArtists) {
+                document.body.classList.add('hide-artists');
+            }
+            
+            // Update active state
+            document.querySelectorAll('.theme-option').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Update URL
+            updateURL();
+        };
+        btn.addEventListener('click', btn._themeClickHandler);
+    });
+    
+    // Set font size buttons
+    document.querySelectorAll('.font-size-option').forEach(btn => {
+        const size = btn.dataset.size;
+        if (size === fontSize) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+        btn.removeEventListener('click', btn._fontClickHandler);
+        btn._fontClickHandler = () => {
+            fontSize = size;
+            localStorage.setItem('fontSize', size);
+            
+            // Update UI
+            document.body.classList.remove('font-size-xsmall', 'font-size-small', 'font-size-medium', 'font-size-large', 'font-size-xlarge');
+            document.body.classList.add(`font-size-${size}`);
+            
+            // Update active state
+            document.querySelectorAll('.font-size-option').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Update URL
+            updateURL();
+        };
+        btn.addEventListener('click', btn._fontClickHandler);
+    });
+    
+    // Set hide artists toggle
+    const hideArtistsToggle = document.getElementById('hide-artists-toggle');
+    if (hideArtistsToggle) {
+        hideArtistsToggle.checked = hideArtists;
+        hideArtistsToggle.removeEventListener('change', handleHideArtistsChange);
+        hideArtistsToggle.addEventListener('change', handleHideArtistsChange);
+    }
+}
+
+function handleAutoCloseChange(e) {
+    autoCloseMode = e.target.checked;
+    localStorage.setItem('autoCloseMode', autoCloseMode);
+    
+    // Show/hide tip
+    const tip = document.getElementById('auto-close-tip');
+    if (tip) {
+        tip.style.display = autoCloseMode ? 'block' : 'none';
+    }
+    
+    updateURL();
+}
+
+function handleHideArtistsChange(e) {
+    hideArtists = e.target.checked;
+    localStorage.setItem('hideArtists', hideArtists);
+    
+    // Update UI
+    if (hideArtists) {
+        document.body.classList.add('hide-artists');
+    } else {
+        document.body.classList.remove('hide-artists');
+    }
+    updateURL();
+}
+
+// Setup scroll detection for settings modal
+function setupScrollDetection() {
+    const modalContent = document.querySelector('.settings-modal-content');
+    if (!modalContent) return;
+    
+    function checkScroll() {
+        const isScrolledToBottom = modalContent.scrollHeight - modalContent.scrollTop <= modalContent.clientHeight + 5;
+        if (isScrolledToBottom) {
+            modalContent.classList.add('scrolled-to-bottom');
+        } else {
+            modalContent.classList.remove('scrolled-to-bottom');
+        }
+    }
+    
+    // Check initially
+    checkScroll();
+    
+    // Check on scroll
+    modalContent.addEventListener('scroll', checkScroll);
+}
+
+// Update modal theme preview
+function updateModalThemePreview(theme) {
+    const modalContent = document.querySelector('.settings-modal-content');
+    if (!modalContent) return;
+    
+    // Remove all preview classes
+    modalContent.classList.remove('preview-pink', 'preview-purple', 'preview-blue', 'preview-sunset', 'preview-dark');
+    
+    // Add new preview class if not default
+    if (theme !== 'default') {
+        modalContent.classList.add(`preview-${theme}`);
     }
 }
 

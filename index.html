@@ -75,13 +75,105 @@
         <!-- Bottom Bar -->
         <div class="bottom-bar">
             <button type="button" class="bottom-bar-button" id="change-progression-btn">
+                <span>🎼</span>
+                <span class="button-text">Progression</span>
+            </button>
+            <button type="button" class="bottom-bar-button" id="settings-btn">
                 <span>⚙️</span>
-                <span>Change Progression</span>
+                <span class="button-text">Settings</span>
             </button>
             <button type="button" class="bottom-bar-button" id="info-btn">
                 <span>ℹ️</span>
-                <span>Info</span>
+                <span class="button-text">Info</span>
             </button>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content settings-modal-content">
+                <span class="close-button" id="close-settings-modal">&times;</span>
+                <h3>Settings</h3>
+                
+                <!-- Setting 1: Auto-close songs -->
+                <div class="setting-item">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="auto-close-toggle">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-text">Auto-close songs</span>
+                    </label>
+                    <p class="setting-description">
+                        Opening a song automatically closes others (only one open at a time).
+                    </p>
+                    <p class="setting-tip" id="auto-close-tip" style="display: none;">
+                        <strong>💡 Tip:</strong> Long-press (hold) a song title to "lock" it open. Locked songs stay visible even when auto-close is on.
+                    </p>
+                </div>
+
+                <!-- Setting 2: Color Theme -->
+                <div class="setting-item">
+                    <label class="setting-label">Color Theme</label>
+                    <div class="theme-options">
+                        <button class="theme-option" data-theme="default" title="Original Purple">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #b794f6, #8b5cf6)"></div>
+                            <span>Original</span>
+                        </button>
+                        <button class="theme-option" data-theme="pink" title="Pink Pony">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #FF69B4, #FF1493, #C71585)"></div>
+                            <span>Pink Pony</span>
+                        </button>
+                        <button class="theme-option" data-theme="purple" title="Purple Dreams">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #9333ea, #7c3aed, #6d28d9)"></div>
+                            <span>Purple</span>
+                        </button>
+                        <button class="theme-option" data-theme="blue" title="Ocean Blue">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #60a5fa, #3b82f6, #2563eb)"></div>
+                            <span>Blue</span>
+                        </button>
+                        <button class="theme-option" data-theme="sunset" title="Sunset Orange">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #fb923c, #f97316, #ea580c)"></div>
+                            <span>Sunset</span>
+                        </button>
+                        <button class="theme-option" data-theme="dark" title="Dark Mode">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #374151, #1f2937, #111827)"></div>
+                            <span>Dark</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Setting 3: Font Size -->
+                <div class="setting-item">
+                    <label class="setting-label">Lyrics Font Size</label>
+                    <div class="font-size-options">
+                        <button class="font-size-option font-size-xsmall-preview" data-size="xsmall">Extra Small</button>
+                        <button class="font-size-option font-size-small-preview" data-size="small">Small</button>
+                        <button class="font-size-option font-size-medium-preview" data-size="medium">Medium</button>
+                        <button class="font-size-option font-size-large-preview" data-size="large">Large</button>
+                        <button class="font-size-option font-size-xlarge-preview" data-size="xlarge">Extra Large</button>
+                    </div>
+                </div>
+
+                <!-- Setting 4: Hide Artist Names -->
+                <div class="setting-item">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="hide-artists-toggle">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-text">Hide artist names</span>
+                    </label>
+                    <p class="setting-description">
+                        Cleaner look if you already know all the songs.
+                    </p>
+                </div>
+
+                <!-- URL Note -->
+                <div class="settings-note">
+                    <strong>💾 Note:</strong> Settings are automatically saved in the URL. Share the link to keep your preferences!
+                </div>
+
+                <!-- Bottom Close Button -->
+                <div class="settings-footer">
+                    <button type="button" class="settings-close-btn" id="close-settings-bottom">Close</button>
+                </div>
+            </div>
         </div>
 
         <!-- Loading Indicator -->

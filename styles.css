@@ -578,3 +578,657 @@ header {
     left: 0;
 }
 
+/* Settings Modal */
+.settings-modal-content {
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+}
+
+/* Sticky close button */
+.settings-modal-content .close-button {
+    position: sticky;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+    background: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    float: right;
+    margin-bottom: -40px;
+}
+
+.settings-modal-content h3 {
+    margin-top: 0;
+    padding-top: 20px;
+    clear: none;
+}
+
+/* Scroll indicator - fade shadow at bottom when scrollable */
+.settings-modal-content::after {
+    content: '';
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1));
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+/* Hide shadow when scrolled to bottom */
+.settings-modal-content.scrolled-to-bottom::after {
+    opacity: 0;
+}
+
+.settings-modal-content h3 {
+    color: #a78bfa;
+    margin-bottom: 24px;
+    font-size: 1.5rem;
+}
+
+/* Modal background changes with theme preview */
+.settings-modal-content.preview-pink {
+    background: linear-gradient(135deg, #FFE8F5 0%, #FFD4EA 100%);
+}
+
+.settings-modal-content.preview-pink .close-button {
+    background: #FFE8F5;
+}
+
+.settings-modal-content.preview-purple {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+}
+
+.settings-modal-content.preview-purple .close-button {
+    background: #f3e8ff;
+}
+
+.settings-modal-content.preview-blue {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+.settings-modal-content.preview-blue .close-button {
+    background: #dbeafe;
+}
+
+.settings-modal-content.preview-sunset {
+    background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+}
+
+.settings-modal-content.preview-sunset .close-button {
+    background: #ffedd5;
+}
+
+.settings-modal-content.preview-dark {
+    background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+    color: #e5e7eb;
+}
+
+.settings-modal-content.preview-dark .close-button {
+    background: #1f2937;
+    color: #9ca3af;
+}
+
+.settings-modal-content.preview-dark h3 {
+    color: #c4b5fd;
+}
+
+.settings-modal-content.preview-dark .setting-item {
+    background: #1f2937;
+}
+
+.settings-modal-content.preview-dark .setting-label,
+.settings-modal-content.preview-dark .toggle-text {
+    color: #f3f4f6;
+}
+
+.settings-modal-content.preview-dark .setting-description {
+    color: #9ca3af;
+}
+
+.settings-modal-content.preview-dark .close-button {
+    color: #9ca3af;
+}
+
+.settings-modal-content.preview-dark .theme-option,
+.settings-modal-content.preview-dark .font-size-option {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+.setting-item {
+    margin: 24px 0;
+    padding: 16px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.setting-label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+/* Toggle Switch */
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.toggle-label input[type="checkbox"] {
+    display: none;
+}
+
+.toggle-slider {
+    width: 50px;
+    height: 26px;
+    background: #ccc;
+    border-radius: 26px;
+    position: relative;
+    transition: background 0.3s;
+    flex-shrink: 0;
+}
+
+.toggle-slider:after {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.toggle-label input:checked + .toggle-slider {
+    background: #a78bfa;
+}
+
+.toggle-label input:checked + .toggle-slider:after {
+    transform: translateX(24px);
+}
+
+.toggle-text {
+    font-weight: 500;
+    color: #333;
+}
+
+.setting-description {
+    margin: 8px 0 0 62px;
+    font-size: 0.75rem;
+    color: #888;
+    line-height: 1.4;
+}
+
+.setting-tip {
+    margin: 8px 0 0 62px;
+    font-size: 0.75rem;
+    color: #a78bfa;
+    line-height: 1.4;
+    padding: 8px 12px;
+    background: #f3e8ff;
+    border-radius: 6px;
+    border-left: 3px solid #a78bfa;
+}
+
+/* Settings Note */
+.settings-note {
+    margin: 24px 0;
+    padding: 12px 16px;
+    background: #e0f2fe;
+    border-left: 3px solid #0ea5e9;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #0c4a6e;
+    line-height: 1.5;
+}
+
+.settings-note strong {
+    color: #0369a1;
+}
+
+/* Settings Footer */
+.settings-footer {
+    margin: 24px 0 0;
+    padding: 16px 0;
+    text-align: center;
+    border-top: 1px solid #e5e7eb;
+}
+
+.settings-close-btn {
+    padding: 12px 32px;
+    background: #a78bfa;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.settings-close-btn:hover {
+    background: #8b5cf6;
+}
+
+.settings-close-btn:active {
+    transform: scale(0.98);
+}
+
+/* Theme Options */
+.theme-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+}
+
+.theme-option {
+    padding: 12px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-option:hover {
+    border-color: #a78bfa;
+    transform: translateY(-2px);
+}
+
+.theme-option.active {
+    border-color: #a78bfa;
+    background: #f5f3ff;
+}
+
+.theme-preview {
+    width: 60px;
+    height: 40px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.theme-option span {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Font Size Options */
+.font-size-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.font-size-option {
+    padding: 10px 18px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    color: #666;
+}
+
+.font-size-option:hover {
+    border-color: #a78bfa;
+}
+
+.font-size-option.active {
+    border-color: #a78bfa;
+    background: #a78bfa;
+    color: white;
+}
+
+/* Font size classes applied to lyrics */
+.font-size-xsmall .accordion-lyrics {
+    font-size: 0.8rem;
+}
+
+.font-size-small .accordion-lyrics {
+    font-size: 0.9rem;
+}
+
+.font-size-medium .accordion-lyrics {
+    font-size: 1rem;
+}
+
+.font-size-large .accordion-lyrics {
+    font-size: 1.15rem;
+}
+
+.font-size-xlarge .accordion-lyrics {
+    font-size: 1.3rem;
+}
+
+/* Font size button previews */
+.font-size-xsmall-preview {
+    font-size: 0.7rem !important;
+}
+
+.font-size-small-preview {
+    font-size: 0.8rem !important;
+}
+
+.font-size-medium-preview {
+    font-size: 0.9rem !important;
+}
+
+.font-size-large-preview {
+    font-size: 1rem !important;
+}
+
+.font-size-xlarge-preview {
+    font-size: 1.1rem !important;
+}
+
+/* Hide artists when enabled */
+.hide-artists .accordion-artist {
+    display: none;
+}
+
+/* Theme color variables (applied to body) */
+body.theme-pink {
+    background: linear-gradient(135deg, #FF69B4 0%, #FF1493 50%, #C71585 100%);
+}
+
+body.theme-pink .accordion-title {
+    color: #FF1493;
+}
+
+body.theme-pink .accordion-lyrics {
+    color: #8B0A50;
+}
+
+body.theme-pink .bottom-bar {
+    background: linear-gradient(135deg, #FFE8F5 0%, #FFD4EA 100%);
+    border-color: #FF69B4;
+}
+
+body.theme-pink .transpose-pill {
+    background: #FFE8F5;
+    border: 1px solid #FF69B4;
+}
+
+body.theme-pink .chord {
+    color: #C71585;
+}
+
+body.theme-purple {
+    background: linear-gradient(135deg, #9333ea 0%, #7c3aed 50%, #6d28d9 100%);
+}
+
+body.theme-purple .accordion-title {
+    color: #7c3aed;
+}
+
+body.theme-purple .accordion-lyrics {
+    color: #4c1d95;
+}
+
+body.theme-purple .bottom-bar {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    border-color: #9333ea;
+}
+
+body.theme-purple .transpose-pill {
+    background: #f3e8ff;
+    border: 1px solid #9333ea;
+}
+
+body.theme-purple .chord {
+    color: #6d28d9;
+}
+
+body.theme-blue {
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
+}
+
+body.theme-blue .accordion-title {
+    color: #2563eb;
+}
+
+body.theme-blue .accordion-lyrics {
+    color: #1e3a8a;
+}
+
+body.theme-blue .bottom-bar {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-color: #3b82f6;
+}
+
+body.theme-blue .transpose-pill {
+    background: #dbeafe;
+    border: 1px solid #3b82f6;
+}
+
+body.theme-blue .chord {
+    color: #1d4ed8;
+}
+
+body.theme-sunset {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 50%, #ea580c 100%);
+}
+
+body.theme-sunset .accordion-title {
+    color: #ea580c;
+}
+
+body.theme-sunset .accordion-lyrics {
+    color: #7c2d12;
+}
+
+body.theme-sunset .bottom-bar {
+    background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+    border-color: #f97316;
+}
+
+body.theme-sunset .transpose-pill {
+    background: #ffedd5;
+    border: 1px solid #f97316;
+}
+
+body.theme-sunset .chord {
+    color: #c2410c;
+}
+
+body.theme-dark {
+    background: linear-gradient(135deg, #374151 0%, #1f2937 50%, #111827 100%);
+}
+
+body.theme-dark .container {
+    color: #e5e7eb;
+}
+
+body.theme-dark .accordion-item {
+    background: #1f2937;
+    color: #e5e7eb;
+    border: 1px solid #374151;
+}
+
+body.theme-dark .accordion-header {
+    background: #1f2937;
+}
+
+body.theme-dark .accordion-title {
+    color: #f3f4f6;
+}
+
+body.theme-dark .accordion-artist {
+    color: #9ca3af;
+}
+
+body.theme-dark .accordion-lyrics {
+    background: #111827;
+    color: #e5e7eb;
+    border-top: 1px solid #374151;
+}
+
+body.theme-dark .bottom-bar {
+    background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+    border-color: #4b5563;
+}
+
+body.theme-dark .bottom-bar-button {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+body.theme-dark .bottom-bar-button:hover {
+    background: #6b7280;
+    border-color: #6b7280;
+}
+
+body.theme-dark .transpose-pill {
+    background: #374151;
+    border: 1px solid #6b7280;
+    color: #e5e7eb;
+}
+
+body.theme-dark .subtitle {
+    color: #d1d5db;
+}
+
+body.theme-dark .modal-content {
+    background: #1f2937;
+    color: #e5e7eb;
+}
+
+body.theme-dark .close-button {
+    color: #9ca3af;
+}
+
+body.theme-dark .close-button:hover {
+    color: #f3f4f6;
+}
+
+body.theme-dark .setting-item {
+    background: #374151;
+}
+
+body.theme-dark .setting-label,
+body.theme-dark .toggle-text {
+    color: #f3f4f6;
+}
+
+body.theme-dark .setting-description {
+    color: #9ca3af;
+}
+
+body.theme-dark .setting-tip {
+    background: #374151;
+    color: #c4b5fd;
+    border-left-color: #a78bfa;
+}
+
+body.theme-dark .settings-note {
+    background: #1e3a4a;
+    color: #bae6fd;
+    border-left-color: #0ea5e9;
+}
+
+body.theme-dark .settings-note strong {
+    color: #7dd3fc;
+}
+
+body.theme-dark .settings-footer {
+    border-top-color: #4b5563;
+}
+
+body.theme-dark .settings-close-btn {
+    background: #6b7280;
+}
+
+body.theme-dark .settings-close-btn:hover {
+    background: #9ca3af;
+}
+
+body.theme-dark .settings-modal-content .close-button {
+    background: #1f2937;
+    color: #9ca3af;
+}
+
+body.theme-dark .theme-option,
+body.theme-dark .font-size-option {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+body.theme-dark .theme-option:hover,
+body.theme-dark .font-size-option:hover {
+    border-color: #9ca3af;
+}
+
+body.theme-dark .banner {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+}
+
+body.theme-dark .info-modal-content h3,
+body.theme-dark .info-modal-content h4 {
+    color: #a78bfa;
+}
+
+body.theme-dark .info-modal-content p,
+body.theme-dark .info-modal-content li {
+    color: #d1d5db;
+}
+
+body.theme-dark .info-modal-content a {
+    color: #a78bfa;
+}
+
+body.theme-dark .info-modal-content a:hover {
+    color: #c4b5fd;
+}
+
+/* Locked song indicator */
+.accordion-header.locked {
+    border-left: 4px solid #a78bfa;
+}
+
+.accordion-header.locked::after {
+    content: '📌';
+    position: absolute;
+    right: 50px;
+    font-size: 1rem;
+}
+
+/* Smaller buttons for 3-button layout */
+.bottom-bar-button .button-text {
+    display: inline;
+}
+
+@media (max-width: 500px) {
+    .bottom-bar-button {
+        padding: 8px 12px;
+        font-size: 13px;
+        gap: 4px;
+    }
+    
+    .bottom-bar-button .button-text {
+        font-size: 12px;
+    }
+}
+
