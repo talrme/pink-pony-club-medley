@@ -60,7 +60,7 @@ header::before {
     top: 0;
     left: 0;
     right: 0;
-    height: 120px;
+    height: 90px;
     background: transparent;
     z-index: 99;
     pointer-events: none;
@@ -76,6 +76,11 @@ header.stuck::before {
         rgba(139, 92, 246, 0.7) 40%, 
         rgba(139, 92, 246, 0.4) 70%, 
         transparent 100%);
+}
+
+/* Hide subtitle (Roman numerals) when stuck to top */
+header.stuck .subtitle {
+    display: none;
 }
 
 /* Chord Transposer Pill */
