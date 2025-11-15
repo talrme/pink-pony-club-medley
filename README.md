@@ -35,6 +35,7 @@ Explore songs with common chord progressions. View lyrics, transpose keys, reord
 - Purple gradient background
 - Clean, modern card design
 - Smooth animations and transitions
+- Bottom action bar with quick access to progression switching and info
 
 ## How to Use
 
@@ -54,9 +55,12 @@ Then open: http://localhost:8000
 1. **View Songs**: Click any song to expand and view lyrics
 2. **Transpose**: Use +/- buttons to change keys
 3. **Reorder**: Drag the ⋮⋮ handle to rearrange songs
-4. **Switch Progressions**: Click the ⚙️ gear icon to choose a different progression
-5. **Reset**: Click the banner to return to defaults
-6. **Share**: Copy the URL to share your custom arrangement
+4. **Switch Progressions**: 
+   - Click the ⚙️ gear icon next to the progression name, OR
+   - Click the "⚙️ Change Progression" button at the bottom of the page
+5. **Info**: Click the "ℹ️ Info" button at the bottom to see page details and links to all song collections
+6. **Reset**: Click the banner to return to defaults
+7. **Share**: Copy the URL to share your custom arrangement
 
 ## Project Structure
 
