@@ -970,6 +970,32 @@ function setupBottomBarButtons() {
             }
         });
     }
+    
+    // Collapse All button
+    const collapseAllBtn = document.getElementById('collapse-all-btn');
+    if (collapseAllBtn) {
+        collapseAllBtn.addEventListener('click', (e) => {
+            // Close all accordion items
+            document.querySelectorAll('.accordion-item.active').forEach(item => {
+                item.classList.remove('active');
+            });
+            // Clear all locks
+            lockedSongs.clear();
+            document.querySelectorAll('.accordion-header.locked').forEach(header => {
+                header.classList.remove('locked');
+            });
+            
+            // Force remove hover state by temporarily disabling pointer events
+            const btn = e.currentTarget;
+            btn.style.pointerEvents = 'none';
+            btn.blur();
+            
+            // Re-enable after a brief moment
+            setTimeout(() => {
+                btn.style.pointerEvents = '';
+            }, 100);
+        });
+    }
 }
 
 // Load saved settings from localStorage and URL (URL takes priority)
