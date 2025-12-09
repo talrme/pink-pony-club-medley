@@ -256,6 +256,11 @@ header.stuck .subtitle {
     touch-action: none;
 }
 
+/* Hide drag handles when reordering is disabled */
+body.reordering-disabled .drag-handle {
+    display: none;
+}
+
 .drag-handle:active {
     cursor: grabbing;
 }

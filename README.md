@@ -19,13 +19,15 @@ Explore songs with common chord progressions. View lyrics, transpose keys, reord
 
 📱 **Mobile-Optimized Design**
 - Accordion-style song list for compact viewing
-- Touch-friendly drag-and-drop reordering
+- **Songs start expanded by default** (can be configured per-song in Google Doc)
+- Touch-friendly interactions
 - Smooth scrolling and animations
 - Responsive design for all screen sizes
 - Auto-close mode option for cleaner mobile experience
 
-🔄 **Drag & Drop Reordering**
-- Reorder songs by dragging the handle (⋮⋮)
+🔄 **Drag & Drop Reordering (Optional)**
+- Enable in Settings to show drag handles (⋮⋮)
+- Reorder songs by dragging the handle
 - Touch support for mobile devices
 - Visual feedback during dragging
 - Order is saved in URL for sharing
@@ -39,9 +41,11 @@ Explore songs with common chord progressions. View lyrics, transpose keys, reord
 
 ⚙️ **Customizable Settings**
 - **Auto-close songs**: Toggle to only allow one song open at a time (great for mobile)
+- **Enable song reordering**: Show/hide drag handles for reordering songs
 - **Color themes**: Choose from 6 gradient themes (Original Purple, Pink, Purple, Blue, Sunset, Dark)
 - **Font size**: Select from 5 sizes (Extra Small to Extra Large) for lyrics
 - **Hide artist names**: Option to hide artist credits for a cleaner look
+- **Sticky chords**: Toggle whether chords stay at top when scrolling
 - All settings saved in URL for sharing and persistence
 
 🔗 **Shareable URLs**
@@ -71,26 +75,31 @@ Then open: http://localhost:8000
 
 ### Navigating the App
 
-1. **View Songs**: Click any song to expand and view lyrics
+1. **View Songs**: Songs start expanded by default - click any song to collapse/expand
 2. **Transpose**: Use +/- buttons to change keys
-3. **Reorder**: Drag the ⋮⋮ handle to rearrange songs
+3. **Reorder**: Enable in Settings, then drag the ⋮⋮ handle to rearrange songs
 4. **Lock Songs**: Long-press (0.5s) on a song title to lock it open with a 📌 pin
-5. **Switch Progressions**: 
-   - Click the 🎼 icon next to the progression name, OR
+5. **Open/Close All**: Click the "↕" button to toggle all songs open or closed
+6. **Switch Progressions**: 
+   - Click the ⚙️ icon next to the progression name, OR
    - Click the "🎼 Change Progression" button at the bottom of the page
-6. **Settings**: Click the "⚙️ Settings" button at the bottom to customize:
+7. **Settings**: Click the "⚙️ Settings" button at the bottom to customize:
    - Auto-close mode (one song at a time)
+   - Enable song reordering
    - Color theme (6 options)
    - Lyrics font size (5 sizes)
    - Hide/show artist names
-7. **Info**: Click the "ℹ️ Info" button at the bottom to see page details and links to all song collections
-8. **Reset**: Click the banner to return to defaults
-9. **Share**: Copy the URL to share your custom arrangement (includes all settings!)
+   - Sticky chords toggle
+8. **Info**: Click the "ℹ️ Info" button at the bottom to see page details and links to all song collections
+9. **Reset**: Click the banner to return to defaults
+10. **Share**: Copy the URL to share your custom arrangement (includes all settings!)
 
 ### Tips
 
-- **Auto-close mode**: When enabled, all open songs collapse immediately. Perfect for mobile browsing.
+- **Songs start expanded**: By default, all songs show their lyrics when you load the page
+- **Auto-close mode**: When enabled, clicking a song doesn't collapse other open songs - useful for comparing lyrics
 - **Locked songs**: Use long-press to keep multiple songs open even in auto-close mode
+- **Reordering**: Disabled by default to avoid accidental touches - enable in Settings when needed
 - **Sticky chords**: The chord transposer stays at the top when you scroll, so you can always see the chords
 - **Settings in URL**: All your settings are automatically saved in the URL, so bookmarks preserve your preferences
 - **Add to Home Screen**: Save as "Medlies" app on iOS/Android with custom 🎸 icon for quick access
@@ -139,6 +148,7 @@ Each progression has its own Google Doc with this format:
 
 Title: Don't Stop Believin'
 Artist: Journey
+Default Expand: Yes
 
 Just a small town girl
 Living in a lonely world
@@ -150,6 +160,7 @@ For a smile they can share the night
 
 Title: Africa
 Artist: Toto
+Default Expand: No
 
 I hear the drums echoing tonight
 But she hears only whispers of some quiet conversation
@@ -165,6 +176,7 @@ The moonlit wings reflect the stars that guide me towards salvation
 - Everything before the first `Title:` is ignored
 - Each song starts with `Title:` followed by the song name
 - Next line should be `Artist:` followed by the artist name
+- Optional: `Default Expand: Yes` (default) or `Default Expand: No` to control if song starts expanded
 - All remaining lines until the next `Title:` are lyrics
 - **Bold text is preserved** - select text and press Ctrl+B (or ⌘+B on Mac)
 - Blank lines between songs are optional
@@ -177,6 +189,7 @@ The moonlit wings reflect the stars that guide me towards salvation
    ```
    Title: Your Song Title
    Artist: Artist Name
+   Default Expand: Yes
    
    Lyrics go here
    More lyrics with bold text
@@ -186,6 +199,7 @@ The moonlit wings reflect the stars that guide me towards salvation
 
 **Tips:**
 - **Bold text:** Select text in Google Docs and press Ctrl+B (⌘+B on Mac) - it will appear bold on the site
+- **Default Expand:** Set to "No" if you want the song to start collapsed instead of expanded
 - You can add intro notes at the top (before first `Title:`)
 - Add notes/attributions after `===` at the bottom
 - Changes appear automatically once published version updates

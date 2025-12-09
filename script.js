@@ -15,6 +15,7 @@ let currentTheme = 'default'; // Default theme (original purple gradient)
 let fontSize = 'medium'; // Default font size
 let hideArtists = false; // Default: show artists
 let stickyChords = true; // Default: chords stick to top when scrolling
+let enableReordering = false; // Default: reordering disabled
 
 // Initialize
 console.log('🔷 script.js loaded and executing');
@@ -48,6 +49,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('⏳ About to renderSongs...');
         renderSongs();
         console.log('✓ Songs rendered');
+        
+        console.log('⏳ Updating toggle all button...');
+        updateToggleAllButton();
+        console.log('✓ Toggle all button updated');
         
         console.log('⏳ About to setupTransposeButtons...');
         setupTransposeButtons();
@@ -233,6 +238,7 @@ function parseGoogleDocHTML(html) {
         
         let title = '';
         let artist = 'Unknown';
+        let defaultExpand = true; // Default to expanded
         let lyrics = [];
         let inNotesSection = false;
         let lastLineWasEmpty = false;
@@ -245,6 +251,10 @@ function parseGoogleDocHTML(html) {
             } else if (line.startsWith('Artist:')) {
                 artist = line.replace('Artist:', '').trim();
                 inNotesSection = false;
+                lastLineWasEmpty = false;
+            } else if (line.startsWith('Default Expand:')) {
+                const expandValue = line.replace('Default Expand:', '').trim();
+                defaultExpand = expandValue.toLowerCase() !== 'no';
                 lastLineWasEmpty = false;
             } else if (line.startsWith('Lyrics:')) {
                 // Skip "Lyrics:" label - it's not actual lyrics content
@@ -281,7 +291,8 @@ function parseGoogleDocHTML(html) {
             songs.push({
                 title,
                 artist,
-                lyrics: lyrics.join('\n')
+                lyrics: lyrics.join('\n'),
+                defaultExpand
             });
         }
     }
@@ -361,6 +372,9 @@ function updateURL() {
         if (!stickyChords) url.searchParams.set('stickyChords', '0');
         else url.searchParams.delete('stickyChords');
         
+        if (enableReordering) url.searchParams.set('enableReordering', '1');
+        else url.searchParams.delete('enableReordering');
+        
         window.history.pushState({}, '', url);
         console.log('URL updated:', url.toString());
     } catch (error) {
@@ -369,11 +383,11 @@ function updateURL() {
 }
 
 // Render songs in the grid
-function renderSongs(keepDragState = false) {
+function renderSongs(keepDragState = false, forceDefaultExpand = false) {
     const container = document.getElementById('songs-container');
     
-    // Remember which item was active (open)
-    const activeIndex = Array.from(document.querySelectorAll('.accordion-item'))
+    // Remember which item was active (open) before clearing
+    const activeIndex = forceDefaultExpand ? -1 : Array.from(document.querySelectorAll('.accordion-item'))
         .findIndex(item => item.classList.contains('active'));
     
     container.innerHTML = '';
@@ -382,9 +396,17 @@ function renderSongs(keepDragState = false) {
         const song = songs[songIndex];
         const card = createSongCard(song, displayIndex);
         
-        // Restore active state if it was the same song
-        if (activeIndex !== -1 && displayIndex === activeIndex) {
-            card.classList.add('active');
+        // Expand songs based on defaultExpand property (unless we're restoring state)
+        if (activeIndex === -1) {
+            // First render or forced default - use defaultExpand
+            if (song.defaultExpand !== false) {
+                card.classList.add('active');
+            }
+        } else {
+            // Restore active state if it was the same song
+            if (displayIndex === activeIndex) {
+                card.classList.add('active');
+            }
         }
         
         // Restore dragging state if we're mid-drag
@@ -573,6 +595,25 @@ function toggleAccordion(item) {
         // Open this one
         item.classList.add('active');
     }
+    
+    // Update the toggle all button text
+    updateToggleAllButton();
+}
+
+// Update the Open All/Close All button text based on current state
+function updateToggleAllButton() {
+    const toggleAllText = document.getElementById('toggle-all-text');
+    if (!toggleAllText) return;
+    
+    const allItems = document.querySelectorAll('.accordion-item');
+    const activeItems = document.querySelectorAll('.accordion-item.active');
+    
+    // If all songs are expanded, show "Close All", otherwise "Open All"
+    if (allItems.length > 0 && activeItems.length === allItems.length) {
+        toggleAllText.textContent = 'Close All';
+    } else {
+        toggleAllText.textContent = 'Open All';
+    }
 }
 
 // Touch event state
@@ -735,6 +776,7 @@ function handleTouchEnd(e) {
         
         // Re-render to clean up
         renderSongs();
+        updateToggleAllButton();
     }
     
     // Clean up
@@ -882,7 +924,8 @@ function setupBannerClick() {
             
             // Update display
             updateChordDisplay();
-            renderSongs();
+            renderSongs(false, true); // Force default expand on reset
+            updateToggleAllButton();
             
             // Clear URL parameters
             window.history.pushState({}, '', window.location.pathname);
@@ -971,19 +1014,32 @@ function setupBottomBarButtons() {
         });
     }
     
-    // Collapse All button
+    // Collapse All / Open All button (dynamic)
     const collapseAllBtn = document.getElementById('collapse-all-btn');
     if (collapseAllBtn) {
         collapseAllBtn.addEventListener('click', (e) => {
-            // Close all accordion items
-            document.querySelectorAll('.accordion-item.active').forEach(item => {
-                item.classList.remove('active');
-            });
-            // Clear all locks
-            lockedSongs.clear();
-            document.querySelectorAll('.accordion-header.locked').forEach(header => {
-                header.classList.remove('locked');
-            });
+            const toggleAllText = document.getElementById('toggle-all-text');
+            const currentText = toggleAllText ? toggleAllText.textContent : 'Close All';
+            
+            if (currentText === 'Close All') {
+                // Close all accordion items
+                document.querySelectorAll('.accordion-item.active').forEach(item => {
+                    item.classList.remove('active');
+                });
+                // Clear all locks
+                lockedSongs.clear();
+                document.querySelectorAll('.accordion-header.locked').forEach(header => {
+                    header.classList.remove('locked');
+                });
+            } else {
+                // Open all accordion items
+                document.querySelectorAll('.accordion-item').forEach(item => {
+                    item.classList.add('active');
+                });
+            }
+            
+            // Update button text
+            updateToggleAllButton();
             
             // Force remove hover state by temporarily disabling pointer events
             const btn = e.currentTarget;
@@ -1069,6 +1125,21 @@ function loadSettings() {
             header.classList.add('not-sticky');
         }
     }
+    
+    // Enable reordering
+    if (urlParams.has('enableReordering')) {
+        enableReordering = urlParams.get('enableReordering') === '1';
+    } else {
+        const savedEnableReordering = localStorage.getItem('enableReordering');
+        if (savedEnableReordering !== null) {
+            enableReordering = savedEnableReordering === 'true';
+        }
+    }
+    
+    // Apply reordering setting
+    if (!enableReordering) {
+        document.body.classList.add('reordering-disabled');
+    }
 }
 
 // Initialize settings UI when modal opens
@@ -1114,6 +1185,9 @@ function initializeSettingsUI() {
             document.body.classList.add(`font-size-${fontSize}`);
             if (hideArtists) {
                 document.body.classList.add('hide-artists');
+            }
+            if (!enableReordering) {
+                document.body.classList.add('reordering-disabled');
             }
             
             // Update active state
@@ -1168,6 +1242,14 @@ function initializeSettingsUI() {
         stickyChordsToggle.removeEventListener('change', handleStickyChordsChange);
         stickyChordsToggle.addEventListener('change', handleStickyChordsChange);
     }
+    
+    // Set enable reordering toggle
+    const enableReorderingToggle = document.getElementById('enable-reordering-toggle');
+    if (enableReorderingToggle) {
+        enableReorderingToggle.checked = enableReordering;
+        enableReorderingToggle.removeEventListener('change', handleEnableReorderingChange);
+        enableReorderingToggle.addEventListener('change', handleEnableReorderingChange);
+    }
 }
 
 function handleAutoCloseChange(e) {
@@ -1178,18 +1260,6 @@ function handleAutoCloseChange(e) {
     const tip = document.getElementById('auto-close-tip');
     if (tip) {
         tip.style.display = autoCloseMode ? 'block' : 'none';
-    }
-    
-    // When enabling auto-close, collapse all currently open songs
-    if (autoCloseMode) {
-        document.querySelectorAll('.accordion-item.active').forEach(item => {
-            item.classList.remove('active');
-        });
-        // Clear locked songs when enabling auto-close
-        lockedSongs.clear();
-        document.querySelectorAll('.accordion-header.locked').forEach(header => {
-            header.classList.remove('locked');
-        });
     }
     
     updateURL();
@@ -1220,6 +1290,20 @@ function handleStickyChordsChange(e) {
         } else {
             header.classList.remove('not-sticky');
         }
+    }
+    
+    updateURL();
+}
+
+function handleEnableReorderingChange(e) {
+    enableReordering = e.target.checked;
+    localStorage.setItem('enableReordering', enableReordering);
+    
+    // Update UI
+    if (enableReordering) {
+        document.body.classList.remove('reordering-disabled');
+    } else {
+        document.body.classList.add('reordering-disabled');
     }
     
     updateURL();
@@ -1314,7 +1398,8 @@ async function switchProgression(newProgression) {
     
     // Update display
     updateChordDisplay();
-    renderSongs();
+    renderSongs(false, true); // Force default expand for new progression
+    updateToggleAllButton();
     updateURL();
     
     closeProgressionModal();

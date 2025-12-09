@@ -7,11 +7,16 @@
 ```
 Title: Song Name
 Artist: Artist Name
+Default Expand: Yes
 
 First line of lyrics
 Second line of lyrics
 More lyrics here
 ```
+
+**Optional Fields:**
+- `Default Expand: Yes` (default) - Song starts expanded
+- `Default Expand: No` - Song starts collapsed
 
 ---
 
@@ -92,6 +97,7 @@ Welcome to my song collection! These are arranged by key.
 
 Title: First Song
 Artist: Artist Name
+Default Expand: Yes
 
 These are the **chorus** lyrics
 Normal lyrics here
@@ -104,6 +110,7 @@ Consider transposing up for live performance
 
 Title: Second Song  
 Artist: Another Artist
+Default Expand: No
 
 Regular lyrics
 **Hook:** This part is bold
