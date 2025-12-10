@@ -92,12 +92,19 @@ header.stuck::before {
         transparent 100%);
 }
 
-/* Hide subtitle (Roman numerals) when stuck to top */
+/* Hide subtitle (Roman numerals) when stuck to top - keep space to prevent layout shift */
 header.stuck .subtitle {
-    display: none;
+    opacity: 0;
+    pointer-events: none;
 }
 
-/* Chord Transposer Pill */
+.subtitle {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    transition: opacity 0.2s ease;
+}
 .transpose-pill {
     display: inline-flex;
     align-items: center;
@@ -158,13 +165,6 @@ header.stuck .subtitle {
 
 .transpose-pill button:active {
     background: #e0e0e0;
-}
-
-.subtitle {
-    font-size: 0.7rem;
-    opacity: 0.6;
-    font-weight: 400;
-    letter-spacing: 0.3px;
 }
 
 /* Songs List */
@@ -1413,6 +1413,299 @@ body.theme-dark header.stuck::before {
     
     .bottom-bar-button .button-text {
         font-size: 12px;
+    }
+}
+
+/* ==================== AUTO-SCROLL CONTROLS ==================== */
+
+.auto-scroll-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+}
+
+/* Hide when setting is enabled */
+body.hide-auto-scroll .auto-scroll-container {
+    display: none !important;
+}
+
+/* Auto-scroll button base */
+.auto-scroll-btn {
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Neumorphic base - matches default purple theme */
+    background: #e0e5ec;
+    box-shadow: 
+        4px 4px 8px rgba(163, 177, 198, 0.4),
+        -4px -4px 8px rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+}
+
+.auto-scroll-btn:hover {
+    box-shadow: 
+        2px 2px 4px rgba(163, 177, 198, 0.4),
+        -2px -2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.auto-scroll-btn:active {
+    box-shadow: 
+        inset 2px 2px 4px rgba(163, 177, 198, 0.4),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.5);
+}
+
+/* Main play/pause button */
+.auto-scroll-play-pause {
+    width: 44px;
+    height: 44px;
+    transform: translateX(0);
+}
+
+/* When not scrolling, play button is smaller and positioned to the right */
+.auto-scroll-container:not(.scrolling) .auto-scroll-play-pause {
+    width: 44px;
+    height: 44px;
+    transform: translateX(52px); /* Move to where it would be if +/- were visible */
+}
+
+/* When scrolling, pause button is full size and centered */
+.auto-scroll-container.scrolling .auto-scroll-play-pause {
+    width: 56px;
+    height: 56px;
+    transform: translateX(0);
+}
+
+.auto-scroll-play-pause svg {
+    fill: #667eea;
+    transition: all 0.3s ease;
+}
+
+/* Speed adjustment buttons */
+.auto-scroll-speed-btn {
+    width: 40px;
+    height: 40px;
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auto-scroll-speed-btn svg {
+    fill: #667eea;
+}
+
+/* Show speed buttons when scrolling */
+.auto-scroll-container.scrolling .auto-scroll-speed-btn {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.auto-scroll-speed-btn:hover {
+    transform: scale(1.05);
+}
+
+.auto-scroll-speed-btn:active {
+    transform: scale(0.98);
+}
+
+/* Speed indicator */
+.auto-scroll-speed-indicator {
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.auto-scroll-speed-indicator.show {
+    opacity: 1;
+}
+
+/* ==================== THEME-SPECIFIC NEUMORPHIC STYLES ==================== */
+
+/* Pink Theme */
+body.theme-pink .auto-scroll-btn {
+    background: #fce4ec;
+    box-shadow: 
+        4px 4px 8px rgba(236, 178, 198, 0.4),
+        -4px -4px 8px rgba(255, 255, 255, 0.5);
+}
+
+body.theme-pink .auto-scroll-btn:hover {
+    box-shadow: 
+        2px 2px 4px rgba(236, 178, 198, 0.4),
+        -2px -2px 4px rgba(255, 255, 255, 0.5);
+}
+
+body.theme-pink .auto-scroll-btn:active {
+    box-shadow: 
+        inset 2px 2px 4px rgba(236, 178, 198, 0.4),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.5);
+}
+
+body.theme-pink .auto-scroll-play-pause svg,
+body.theme-pink .auto-scroll-speed-btn svg {
+    fill: #FF1493;
+}
+
+/* Purple Theme */
+body.theme-purple .auto-scroll-btn {
+    background: #e8d9f3;
+    box-shadow: 
+        4px 4px 8px rgba(193, 159, 218, 0.4),
+        -4px -4px 8px rgba(255, 255, 255, 0.5);
+}
+
+body.theme-purple .auto-scroll-btn:hover {
+    box-shadow: 
+        2px 2px 4px rgba(193, 159, 218, 0.4),
+        -2px -2px 4px rgba(255, 255, 255, 0.5);
+}
+
+body.theme-purple .auto-scroll-btn:active {
+    box-shadow: 
+        inset 2px 2px 4px rgba(193, 159, 218, 0.4),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.5);
+}
+
+body.theme-purple .auto-scroll-play-pause svg,
+body.theme-purple .auto-scroll-speed-btn svg {
+    fill: #7c3aed;
+}
+
+/* Blue Theme */
+body.theme-blue .auto-scroll-btn {
+    background: #dbeafe;
+    box-shadow: 
+        4px 4px 8px rgba(147, 197, 253, 0.4),
+        -4px -4px 8px rgba(255, 255, 255, 0.5);
+}
+
+body.theme-blue .auto-scroll-btn:hover {
+    box-shadow: 
+        2px 2px 4px rgba(147, 197, 253, 0.4),
+        -2px -2px 4px rgba(255, 255, 255, 0.5);
+}
+
+body.theme-blue .auto-scroll-btn:active {
+    box-shadow: 
+        inset 2px 2px 4px rgba(147, 197, 253, 0.4),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.5);
+}
+
+body.theme-blue .auto-scroll-play-pause svg,
+body.theme-blue .auto-scroll-speed-btn svg {
+    fill: #2563eb;
+}
+
+/* Sunset Theme */
+body.theme-sunset .auto-scroll-btn {
+    background: #fed7aa;
+    box-shadow: 
+        4px 4px 8px rgba(251, 191, 136, 0.4),
+        -4px -4px 8px rgba(255, 255, 255, 0.5);
+}
+
+body.theme-sunset .auto-scroll-btn:hover {
+    box-shadow: 
+        2px 2px 4px rgba(251, 191, 136, 0.4),
+        -2px -2px 4px rgba(255, 255, 255, 0.5);
+}
+
+body.theme-sunset .auto-scroll-btn:active {
+    box-shadow: 
+        inset 2px 2px 4px rgba(251, 191, 136, 0.4),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.5);
+}
+
+body.theme-sunset .auto-scroll-play-pause svg,
+body.theme-sunset .auto-scroll-speed-btn svg {
+    fill: #ea580c;
+}
+
+/* Dark Theme */
+body.theme-dark .auto-scroll-btn {
+    background: #374151;
+    box-shadow: 
+        4px 4px 8px rgba(17, 24, 39, 0.6),
+        -4px -4px 8px rgba(75, 85, 99, 0.3);
+}
+
+body.theme-dark .auto-scroll-btn:hover {
+    box-shadow: 
+        2px 2px 4px rgba(17, 24, 39, 0.6),
+        -2px -2px 4px rgba(75, 85, 99, 0.3);
+}
+
+body.theme-dark .auto-scroll-btn:active {
+    box-shadow: 
+        inset 2px 2px 4px rgba(17, 24, 39, 0.6),
+        inset -2px -2px 4px rgba(75, 85, 99, 0.3);
+}
+
+body.theme-dark .auto-scroll-play-pause svg,
+body.theme-dark .auto-scroll-speed-btn svg {
+    fill: #8b5cf6;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .auto-scroll-container {
+        bottom: 20px; /* At bottom on mobile */
+        right: 15px;
+        gap: 10px;
+        transition: bottom 0.3s ease;
+    }
+    
+    /* Move up when near bottom of page to avoid overlap with bottom bar */
+    .auto-scroll-container.at-bottom {
+        bottom: 90px;
+    }
+    
+    .auto-scroll-play-pause {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .auto-scroll-container:not(.scrolling) .auto-scroll-play-pause {
+        width: 40px;
+        height: 40px;
+        transform: translateX(46px);
+    }
+    
+    .auto-scroll-container.scrolling .auto-scroll-play-pause {
+        width: 50px;
+        height: 50px;
+        transform: translateX(0);
+    }
+    
+    .auto-scroll-speed-btn {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .auto-scroll-speed-indicator {
+        top: -45px;
+        font-size: 1.1rem;
+        padding: 6px 14px;
     }
 }
 

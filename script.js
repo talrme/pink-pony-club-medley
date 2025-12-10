@@ -16,6 +16,19 @@ let fontSize = 'medium'; // Default font size
 let hideArtists = false; // Default: show artists
 let stickyChords = true; // Default: chords stick to top when scrolling
 let enableReordering = false; // Default: reordering disabled
+let hideAutoScroll = false; // Default: show auto-scroll controls
+
+// Auto-scroll state
+let autoScrollEnabled = false; // Is auto-scroll running
+let autoScrollSpeed = 5; // Speed level 1-10 (default 5)
+let autoScrollAnimationId = null; // requestAnimationFrame reference
+let lastScrollTime = 0; // For calculating scroll timing
+
+// Auto-scroll constants (configurable for easy tweaking)
+const AUTO_SCROLL_MIN_SPEED = 1;
+const AUTO_SCROLL_MAX_SPEED = 10;
+const AUTO_SCROLL_DEFAULT_SPEED = 5;
+const AUTO_SCROLL_BASE_PPS = 60; // Base pixels per second at speed level 5
 
 // Initialize
 console.log('🔷 script.js loaded and executing');
@@ -69,6 +82,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('⏳ About to setupBottomBarButtons...');
         setupBottomBarButtons();
         console.log('✓ Bottom bar buttons setup');
+        
+        console.log('⏳ About to setupAutoScrollControls...');
+        setupAutoScrollControls();
+        console.log('✓ Auto-scroll controls setup');
         
         console.log('⏳ About to setupHeaderScrollDetection...');
         setupHeaderScrollDetection();
@@ -374,6 +391,12 @@ function updateURL() {
         
         if (enableReordering) url.searchParams.set('enableReordering', '1');
         else url.searchParams.delete('enableReordering');
+        
+        if (hideAutoScroll) url.searchParams.set('hideAutoScroll', '1');
+        else url.searchParams.delete('hideAutoScroll');
+        
+        if (autoScrollSpeed !== AUTO_SCROLL_DEFAULT_SPEED) url.searchParams.set('autoScrollSpeed', autoScrollSpeed);
+        else url.searchParams.delete('autoScrollSpeed');
         
         window.history.pushState({}, '', url);
         console.log('URL updated:', url.toString());
@@ -1140,6 +1163,37 @@ function loadSettings() {
     if (!enableReordering) {
         document.body.classList.add('reordering-disabled');
     }
+    
+    // Hide auto-scroll
+    if (urlParams.has('hideAutoScroll')) {
+        hideAutoScroll = urlParams.get('hideAutoScroll') === '1';
+    } else {
+        const savedHideAutoScroll = localStorage.getItem('hideAutoScroll');
+        if (savedHideAutoScroll !== null) {
+            hideAutoScroll = savedHideAutoScroll === 'true';
+        }
+    }
+    
+    // Apply hide auto-scroll setting
+    if (hideAutoScroll) {
+        document.body.classList.add('hide-auto-scroll');
+    }
+    
+    // Auto-scroll speed
+    if (urlParams.has('autoScrollSpeed')) {
+        const speedParam = parseInt(urlParams.get('autoScrollSpeed'), 10);
+        if (speedParam >= AUTO_SCROLL_MIN_SPEED && speedParam <= AUTO_SCROLL_MAX_SPEED) {
+            autoScrollSpeed = speedParam;
+        }
+    } else {
+        const savedSpeed = localStorage.getItem('autoScrollSpeed');
+        if (savedSpeed !== null) {
+            const speedValue = parseInt(savedSpeed, 10);
+            if (speedValue >= AUTO_SCROLL_MIN_SPEED && speedValue <= AUTO_SCROLL_MAX_SPEED) {
+                autoScrollSpeed = speedValue;
+            }
+        }
+    }
 }
 
 // Initialize settings UI when modal opens
@@ -1250,6 +1304,14 @@ function initializeSettingsUI() {
         enableReorderingToggle.removeEventListener('change', handleEnableReorderingChange);
         enableReorderingToggle.addEventListener('change', handleEnableReorderingChange);
     }
+    
+    // Set hide auto-scroll toggle
+    const hideAutoScrollToggle = document.getElementById('hide-auto-scroll-toggle');
+    if (hideAutoScrollToggle) {
+        hideAutoScrollToggle.checked = hideAutoScroll;
+        hideAutoScrollToggle.removeEventListener('change', handleHideAutoScrollChange);
+        hideAutoScrollToggle.addEventListener('change', handleHideAutoScrollChange);
+    }
 }
 
 function handleAutoCloseChange(e) {
@@ -1306,6 +1368,21 @@ function handleEnableReorderingChange(e) {
         document.body.classList.add('reordering-disabled');
     }
     
+    updateURL();
+}
+
+function handleHideAutoScrollChange(e) {
+    hideAutoScroll = e.target.checked;
+    localStorage.setItem('hideAutoScroll', hideAutoScroll);
+    
+    // Update UI
+    if (hideAutoScroll) {
+        document.body.classList.add('hide-auto-scroll');
+    } else {
+        document.body.classList.remove('hide-auto-scroll');
+    }
+    
+    updateAutoScrollUI();
     updateURL();
 }
 
@@ -1432,4 +1509,196 @@ function setupHeaderScrollDetection() {
     
     observer.observe(banner);
 }
+
+// ==================== AUTO-SCROLL FUNCTIONALITY ====================
+
+// Setup auto-scroll controls
+function setupAutoScrollControls() {
+    console.log('🎬 Setting up auto-scroll controls...');
+    
+    // Create the floating control container
+    const controlsHtml = `
+        <div class="auto-scroll-container" id="autoScrollContainer">
+            <button class="auto-scroll-btn auto-scroll-speed-btn" id="autoScrollMinus" aria-label="Decrease speed">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M19 13H5v-2h14v2z"/>
+                </svg>
+            </button>
+            <button class="auto-scroll-btn auto-scroll-play-pause" id="autoScrollPlayPause" aria-label="Toggle auto-scroll">
+                <svg viewBox="0 0 24 24" width="24" height="24" id="autoScrollPlayIcon">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" id="autoScrollPauseIcon" style="display: none;">
+                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                </svg>
+            </button>
+            <button class="auto-scroll-btn auto-scroll-speed-btn" id="autoScrollPlus" aria-label="Increase speed">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+            </button>
+            <div class="auto-scroll-speed-indicator" id="autoScrollSpeedIndicator">${autoScrollSpeed}</div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', controlsHtml);
+    console.log('✓ Auto-scroll HTML added to body');
+    
+    // Get elements
+    const playPauseBtn = document.getElementById('autoScrollPlayPause');
+    const minusBtn = document.getElementById('autoScrollMinus');
+    const plusBtn = document.getElementById('autoScrollPlus');
+    
+    if (!playPauseBtn) {
+        console.error('❌ Could not find play/pause button!');
+        return;
+    }
+    
+    console.log('✓ Found all buttons');
+    
+    // Add event listeners
+    playPauseBtn.addEventListener('click', () => {
+        console.log('🎬 Play/Pause clicked');
+        toggleAutoScroll();
+    });
+    minusBtn.addEventListener('click', () => adjustAutoScrollSpeed(-1));
+    plusBtn.addEventListener('click', () => adjustAutoScrollSpeed(1));
+    
+    console.log('✓ Event listeners attached');
+    
+    // Setup scroll position detection for mobile
+    setupScrollPositionDetection();
+    
+    // Update initial visibility
+    updateAutoScrollUI();
+    console.log('✓ Auto-scroll controls setup complete');
+}
+
+// Toggle auto-scroll on/off
+function toggleAutoScroll() {
+    if (autoScrollEnabled) {
+        stopAutoScroll();
+    } else {
+        startAutoScroll();
+    }
+}
+
+// Start auto-scrolling
+function startAutoScroll() {
+    console.log('▶️ Starting auto-scroll at speed', autoScrollSpeed);
+    autoScrollEnabled = true;
+    lastScrollTime = performance.now();
+    
+    // Update UI
+    const playIcon = document.getElementById('autoScrollPlayIcon');
+    const pauseIcon = document.getElementById('autoScrollPauseIcon');
+    const container = document.getElementById('autoScrollContainer');
+    
+    if (playIcon) playIcon.style.display = 'none';
+    if (pauseIcon) pauseIcon.style.display = 'block';
+    if (container) container.classList.add('scrolling');
+    
+    console.log('✓ UI updated to scrolling state');
+    
+    // Simple, robust scroll loop
+    function scroll(currentTime) {
+        if (!autoScrollEnabled) return;
+        
+        // Calculate time delta
+        const deltaTime = currentTime - lastScrollTime;
+        lastScrollTime = currentTime;
+        
+        // Prevent huge jumps if tab was inactive
+        if (deltaTime > 100) {
+            autoScrollAnimationId = requestAnimationFrame(scroll);
+            return;
+        }
+        
+        // Calculate scroll amount based on speed
+        const pixelsPerSecond = AUTO_SCROLL_BASE_PPS * (autoScrollSpeed / AUTO_SCROLL_DEFAULT_SPEED);
+        const scrollAmount = (pixelsPerSecond / 1000) * deltaTime;
+        
+        // Simple, direct scroll - let the browser handle everything
+        window.scrollBy(0, scrollAmount);
+        
+        // Continue animation
+        autoScrollAnimationId = requestAnimationFrame(scroll);
+    }
+    
+    autoScrollAnimationId = requestAnimationFrame(scroll);
+    console.log('✓ Animation loop started');
+}
+
+// Stop auto-scrolling
+function stopAutoScroll() {
+    autoScrollEnabled = false;
+    
+    if (autoScrollAnimationId) {
+        cancelAnimationFrame(autoScrollAnimationId);
+        autoScrollAnimationId = null;
+    }
+    
+    // Update UI
+    document.getElementById('autoScrollPlayIcon').style.display = 'block';
+    document.getElementById('autoScrollPauseIcon').style.display = 'none';
+    document.getElementById('autoScrollContainer').classList.remove('scrolling');
+}
+
+// Adjust auto-scroll speed
+function adjustAutoScrollSpeed(delta) {
+    const newSpeed = Math.max(AUTO_SCROLL_MIN_SPEED, Math.min(AUTO_SCROLL_MAX_SPEED, autoScrollSpeed + delta));
+    
+    if (newSpeed !== autoScrollSpeed) {
+        autoScrollSpeed = newSpeed;
+        localStorage.setItem('autoScrollSpeed', autoScrollSpeed);
+        showSpeedIndicator();
+        updateURL();
+    }
+}
+
+// Show speed indicator with fade effect
+function showSpeedIndicator() {
+    const indicator = document.getElementById('autoScrollSpeedIndicator');
+    indicator.textContent = autoScrollSpeed;
+    indicator.classList.add('show');
+    
+    setTimeout(() => {
+        indicator.classList.remove('show');
+    }, 1500);
+}
+
+// Update auto-scroll UI visibility
+function updateAutoScrollUI() {
+    const container = document.getElementById('autoScrollContainer');
+    if (container) {
+        if (hideAutoScroll) {
+            container.style.display = 'none';
+        } else {
+            container.style.display = 'flex';
+        }
+    }
+}
+
+// Setup scroll position detection for mobile (move up when at bottom)
+function setupScrollPositionDetection() {
+    if (window.innerWidth > 768) return; // Only for mobile
+    
+    window.addEventListener('scroll', () => {
+        const container = document.getElementById('autoScrollContainer');
+        if (!container) return;
+        
+        // Check if near bottom of page (within 100px)
+        const scrollHeight = document.documentElement.scrollHeight;
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const clientHeight = window.innerHeight;
+        const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
+        
+        if (distanceFromBottom < 100) {
+            container.classList.add('at-bottom');
+        } else {
+            container.classList.remove('at-bottom');
+        }
+    });
+}
+
 

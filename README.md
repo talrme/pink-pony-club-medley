@@ -46,7 +46,15 @@ Explore songs with common chord progressions. View lyrics, transpose keys, reord
 - **Font size**: Select from 5 sizes (Extra Small to Extra Large) for lyrics
 - **Hide artist names**: Option to hide artist credits for a cleaner look
 - **Sticky chords**: Toggle whether chords stay at top when scrolling
+- **Hide auto-scroll**: Hide the floating auto-scroll button if you don't need it
 - All settings saved in URL for sharing and persistence
+
+📜 **Auto-Scroll** (New!)
+- **Floating controls** in bottom-right corner with play/pause button
+- **Adjustable speed** from 1-10 using +/- buttons
+- **Theme-aware design** with neumorphic styling that adapts to your color theme
+- **Smooth scrolling** continues automatically, even at bottom of page
+- Perfect for hands-free reading during performances or practice
 
 🔗 **Shareable URLs**
 - Share custom arrangements with unique URLs
@@ -77,22 +85,27 @@ Then open: http://localhost:8000
 
 1. **View Songs**: Songs start expanded by default - click any song to collapse/expand
 2. **Transpose**: Use +/- buttons to change keys
-3. **Reorder**: Enable in Settings, then drag the ⋮⋮ handle to rearrange songs
-4. **Lock Songs**: Long-press (0.5s) on a song title to lock it open with a 📌 pin
-5. **Open/Close All**: Click the "↕" button to toggle all songs open or closed
-6. **Switch Progressions**: 
+3. **Auto-Scroll**: Click the floating play button (bottom-right) to start auto-scrolling
+   - Click pause to stop
+   - Use +/- buttons to adjust speed (1-10)
+   - Speed indicator shows current level
+4. **Reorder**: Enable in Settings, then drag the ⋮⋮ handle to rearrange songs
+5. **Lock Songs**: Long-press (0.5s) on a song title to lock it open with a 📌 pin
+6. **Open/Close All**: Click the "↕" button to toggle all songs open or closed
+7. **Switch Progressions**: 
    - Click the ⚙️ icon next to the progression name, OR
    - Click the "🎼 Change Progression" button at the bottom of the page
-7. **Settings**: Click the "⚙️ Settings" button at the bottom to customize:
+8. **Settings**: Click the "⚙️ Settings" button at the bottom to customize:
    - Auto-close mode (one song at a time)
    - Enable song reordering
    - Color theme (6 options)
    - Lyrics font size (5 sizes)
    - Hide/show artist names
    - Sticky chords toggle
-8. **Info**: Click the "ℹ️ Info" button at the bottom to see page details and links to all song collections
-9. **Reset**: Click the banner to return to defaults
-10. **Share**: Copy the URL to share your custom arrangement (includes all settings!)
+   - Hide auto-scroll button
+9. **Info**: Click the "ℹ️ Info" button at the bottom to see page details and links to all song collections
+10. **Reset**: Click the banner to return to defaults
+11. **Share**: Copy the URL to share your custom arrangement (includes all settings!)
 
 ### Tips
 
@@ -100,6 +113,7 @@ Then open: http://localhost:8000
 - **Auto-close mode**: When enabled, clicking a song doesn't collapse other open songs - useful for comparing lyrics
 - **Locked songs**: Use long-press to keep multiple songs open even in auto-close mode
 - **Reordering**: Disabled by default to avoid accidental touches - enable in Settings when needed
+- **Auto-scroll**: Perfect for hands-free reading - adjustable speed from 1-10
 - **Sticky chords**: The chord transposer stays at the top when you scroll, so you can always see the chords
 - **Settings in URL**: All your settings are automatically saved in the URL, so bookmarks preserve your preferences
 - **Add to Home Screen**: Save as "Medlies" app on iOS/Android with custom 🎸 icon for quick access
