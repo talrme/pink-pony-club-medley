@@ -40,20 +40,23 @@ Explore songs with common chord progressions. View lyrics, transpose keys, reord
 - Works on both desktop (mouse) and mobile (touch)
 
 ⚙️ **Customizable Settings**
-- **Auto-close songs**: Toggle to only allow one song open at a time (great for mobile)
+- **Hide auto-scroll**: Hide the floating auto-scroll button if you don't need it
 - **Enable song reordering**: Show/hide drag handles for reordering songs
-- **Color themes**: Choose from 6 gradient themes (Original Purple, Pink, Purple, Blue, Sunset, Dark)
+- **Color themes**: Choose from 4 gradient themes (Original Purple, Pink, Sunset, Dark)
 - **Font size**: Select from 5 sizes (Extra Small to Extra Large) for lyrics
 - **Hide artist names**: Option to hide artist credits for a cleaner look
-- **Sticky chords**: Toggle whether chords stay at top when scrolling
-- **Hide auto-scroll**: Hide the floating auto-scroll button if you don't need it
+- **Advanced Settings** (expandable section):
+  - **Auto-close songs**: Toggle to only allow one song open at a time (great for mobile)
+  - **Sticky chords**: Toggle whether chords stay at top when scrolling
 - All settings saved in URL for sharing and persistence
 
 📜 **Auto-Scroll** (New!)
 - **Floating controls** in bottom-right corner with play/pause button
-- **Adjustable speed** from 1-10 using +/- buttons
+- **Adjustable speed** from 1-10 using +/- buttons (speeds calibrated for comfortable reading)
+- **Sub-pixel precision**: Advanced accumulation algorithm makes even slowest speeds (1-2) work smoothly
+- **Device-aware**: Automatically adjusts speed based on screen size (phone/tablet/desktop)
 - **Theme-aware design** with neumorphic styling that adapts to your color theme
-- **Smooth scrolling** continues automatically, even at bottom of page
+- **Smooth scrolling** continues automatically until paused or bottom of page reached
 - Perfect for hands-free reading during performances or practice
 
 🔗 **Shareable URLs**
@@ -96,13 +99,14 @@ Then open: http://localhost:8000
    - Click the ⚙️ icon next to the progression name, OR
    - Click the "🎼 Change Progression" button at the bottom of the page
 8. **Settings**: Click the "⚙️ Settings" button at the bottom to customize:
-   - Auto-close mode (one song at a time)
+   - Hide auto-scroll button
    - Enable song reordering
-   - Color theme (6 options)
+   - Color theme (4 options: Original, Pink, Sunset, Dark)
    - Lyrics font size (5 sizes)
    - Hide/show artist names
-   - Sticky chords toggle
-   - Hide auto-scroll button
+   - **Advanced** (click to expand):
+     - Auto-close mode (one song at a time)
+     - Sticky chords toggle
 9. **Info**: Click the "ℹ️ Info" button at the bottom to see page details and links to all song collections
 10. **Reset**: Click the banner to return to defaults
 11. **Share**: Copy the URL to share your custom arrangement (includes all settings!)
@@ -110,12 +114,16 @@ Then open: http://localhost:8000
 ### Tips
 
 - **Songs start expanded**: By default, all songs show their lyrics when you load the page
-- **Auto-close mode**: When enabled, clicking a song doesn't collapse other open songs - useful for comparing lyrics
+- **Auto-close mode**: When disabled (default), clicking a song doesn't collapse other open songs - useful for comparing lyrics
 - **Locked songs**: Use long-press to keep multiple songs open even in auto-close mode
 - **Reordering**: Disabled by default to avoid accidental touches - enable in Settings when needed
-- **Auto-scroll**: Perfect for hands-free reading - adjustable speed from 1-10
+- **Auto-scroll speeds**: Calibrated for comfortable reading at all levels (1-10), with device-specific adjustments
+  - Level 1: Very slow (1.6 pps on desktop, 2.4 on tablet, 3.2 on phone)
+  - Level 5: Moderate (7.9 pps on desktop, 11.8 on tablet, 15.8 on phone)
+  - Level 10: Fast (15.8 pps on desktop, 23.6 on tablet, 31.5 on phone)
 - **Sticky chords**: The chord transposer stays at the top when you scroll, so you can always see the chords
 - **Settings in URL**: All your settings are automatically saved in the URL, so bookmarks preserve your preferences
+- **Advanced settings**: Power-user options are hidden in an expandable section to keep the main UI clean
 - **Add to Home Screen**: Save as "Medlies" app on iOS/Android with custom 🎸 icon for quick access
 
 ## Mobile App Installation

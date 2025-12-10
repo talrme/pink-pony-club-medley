@@ -103,36 +103,51 @@ pink-pony-club-medley/
 
 **Four Customizable Settings**:
 
-1. **Auto-close Mode** (default: OFF)
+1. **Hide Auto-Scroll** (default: OFF)
+   - Hides the floating auto-scroll button in bottom-right corner
+   - Useful if you don't need auto-scroll feature
+   - Button still functions if accessed via URL parameter
+
+2. **Enable Song Reordering** (default: OFF)
+   - Shows/hides drag handles (⋮⋮) for reordering songs
+   - Prevents accidental touches on mobile
+   - Implemented via body class: `body.reordering-disabled`
+
+3. **Color Themes** (4 options, default: Original Purple)
+   - Original: Purple gradient (default)
+   - Pink: Hot pink gradient
+   - Sunset: Orange gradient
+   - Dark: Dark gray/black (dark mode)
+   - Each theme affects: body background, title colors, lyrics colors, footer background, chord pill colors, auto-scroll button styling
+   - Implemented via body classes: `body.theme-pink`, `body.theme-dark`, etc.
+
+4. **Font Size** (5 options, default: Medium)
+   - Extra Small, Small, Medium, Large, Extra Large
+   - Only affects lyrics text (not titles or UI)
+   - Implemented via body classes: `body.font-size-small`, etc.
+
+5. **Hide Artist Names** (default: OFF)
+   - When ON: Artist subtitles are hidden
+   - Implemented via body class: `body.hide-artists`
+
+**Advanced Settings** (expandable section):
+
+6. **Auto-close Mode** (default: OFF)
    - When ON: Only one song can be open at a time
    - When enabled: All currently open songs collapse immediately
    - Exception: Locked songs stay open even in auto-close mode
    - Tip displayed only when enabled
 
-2. **Color Themes** (6 options, default: Original Purple)
-   - Original: Purple gradient (default)
-   - Pink: Hot pink gradient
-   - Purple: Deep purple gradient
-   - Blue: Sky blue gradient
-   - Sunset: Orange gradient
-   - Dark: Dark gray/black (dark mode)
-   - Each theme affects: body background, title colors, lyrics colors, footer background, chord pill colors
-   - Implemented via body classes: `body.theme-pink`, `body.theme-dark`, etc.
-
-3. **Font Size** (5 options, default: Medium)
-   - Extra Small, Small, Medium, Large, Extra Large
-   - Only affects lyrics text (not titles or UI)
-   - Implemented via body classes: `body.font-size-small`, etc.
-
-4. **Hide Artist Names** (default: OFF)
-   - When ON: Artist subtitles are hidden
-   - Implemented via body class: `body.hide-artists`
+7. **Keep Chords at Top** (default: ON)
+   - Controls whether chord header uses sticky positioning
+   - When OFF: Header scrolls normally with page
+   - Implemented by toggling `position: sticky` on header
 
 **Settings Persistence**:
 - Saved to `localStorage` for persistence across sessions
 - Also saved to URL parameters for sharing
 - URL parameters take priority over localStorage
-- URL format: `?progression=X&key=Y&order=Z&autoClose=1&theme=pink&fontSize=large&hideArtists=1`
+- URL format: `?progression=X&key=Y&order=Z&autoClose=1&theme=pink&fontSize=large&hideArtists=1&enableReordering=0&hideAutoScroll=1&autoScrollSpeed=7`
 
 **Settings UI**:
 - Modal dialog with sections for each setting type
@@ -216,7 +231,85 @@ pink-pony-club-medley/
 - `toggleAccordion(item)` - Handles expand/collapse logic
 - `renderSongs()` - Renders all songs in current order
 
-### 8. Mobile App Icons and PWA Configuration
+### 8. Auto-Scroll Feature
+
+**Feature**: Floating play/pause button in bottom-right corner enables automatic scrolling at adjustable speeds.
+
+**Implementation**:
+- **Speed levels**: 1-10, adjustable via +/- buttons
+- **Sub-pixel accumulation**: Fractional scroll amounts accumulate until ≥1 pixel, then scroll
+  - This allows even very slow speeds (1 pps) to work reliably
+  - Without accumulation, fractional pixels get rounded to 0 by browser
+- **Device-specific multipliers**: 
+  - Desktop (>1024px): 1x base speed
+  - Tablet (768-1024px): 1.5x base speed
+  - Phone (<768px): 2x base speed
+- **Speed formula**: Linear scaling with `BASE_PPS = 7.875`
+  - Desktop speeds: Level 1 = 1.58 pps, Level 5 = 7.88 pps, Level 10 = 15.75 pps
+  - Tablet/phone speeds proportionally faster for consistent reading experience
+- **Neumorphic UI**: Soft, extruded button design that adapts to current theme
+- **Animation**: Play button smoothly transitions to center when becoming pause button
+- **Controls visibility**: +/- buttons only show when scrolling is active
+- **Mobile positioning**: Auto-adjusts position when near bottom of page to avoid overlapping bottom bar
+- **requestAnimationFrame**: Runs at display refresh rate (typically 60fps) for smooth scrolling
+- **State management**: `autoScrollEnabled`, `autoScrollSpeed`, `accumulatedScrollPixels`
+
+**Sub-Pixel Accumulation Logic**:
+```javascript
+let accumulatedScrollPixels = 0; // Persistent accumulator
+
+function scroll() {
+    const scrollAmount = 0.3; // Example: fractional pixels
+    accumulatedScrollPixels += scrollAmount; // Accumulate
+    
+    if (accumulatedScrollPixels >= 1) {
+        const pixelsToScroll = Math.floor(accumulatedScrollPixels);
+        window.scrollBy(0, pixelsToScroll); // Scroll whole pixels
+        accumulatedScrollPixels -= pixelsToScroll; // Keep remainder
+    }
+}
+```
+
+**Why Sub-Pixel Accumulation?**
+- Browser's `window.scrollBy()` only accepts whole pixels
+- Without accumulation, speeds below ~30 pps appear frozen (fractional amounts round to 0)
+- With accumulation, even 1 pps works - just scrolls 1 pixel every ~1 second
+- At 60fps, fractional pixels accumulate every frame until reaching 1.0
+
+**Key Functions**:
+- `startAutoScroll()` - Initializes scroll loop with `requestAnimationFrame`
+- `stopAutoScroll()` - Cancels animation frame and stops scrolling
+- `adjustAutoScrollSpeed(delta)` - Changes speed level (+1 or -1)
+- `setupAutoScrollControls()` - Creates floating UI controls dynamically
+
+**Settings Integration**:
+- "Hide auto-scroll" toggle in settings to hide floating button
+- Speed preference saved to localStorage
+- Speed synced to URL parameters for sharing
+
+### 9. Advanced Settings Section
+
+**Feature**: Expandable accordion section in settings modal for power-user features.
+
+**Implementation**:
+- **Toggle button**: "Advanced ▶" header with rotating arrow indicator
+- **Smooth animation**: CSS `max-height` transition for expand/collapse
+- **Contents**: 
+  - "Auto-close songs" toggle
+  - "Keep chords at top" toggle
+- **Purpose**: Keeps main settings UI cleaner while still providing access to advanced options
+
+**Key Functions**:
+- `setupAdvancedToggle()` - Attaches click handler for expand/collapse
+- CSS classes: `.advanced-toggle`, `.advanced-content`, `.expanded`
+
+**Why Advanced Section?**
+- Most users don't need these settings
+- Reduces visual clutter in settings modal
+- Maintains discoverability for power users
+- Better mobile experience with less scrolling needed
+
+### 10. Mobile App Icons and PWA Configuration
 
 **Feature**: Custom app icons and Progressive Web App (PWA) configuration for when users save the site to their home screen (iOS/Android).
 
@@ -329,7 +422,7 @@ header.addEventListener('mouseup', () => {
 All application state is stored in global variables at the top of `script.js`:
 
 ```javascript
-let songs = [];                    // Array of song objects {title, artist, lyrics}
+let songs = [];                    // Array of song objects {title, artist, lyrics, defaultExpand}
 let currentOrder = [];             // Array of indices for display order
 let draggedElement = null;         // Currently dragged DOM element
 let draggedIndex = null;           // Index of dragged item
@@ -344,6 +437,15 @@ let lockedSongs = new Set();       // Set of locked song indices
 let currentTheme = 'default';      // Current color theme
 let fontSize = 'medium';           // Current font size
 let hideArtists = false;           // Hide artists toggle state
+let enableReordering = false;      // Show/hide drag handles
+let hideAutoScroll = false;        // Hide auto-scroll button
+
+// Auto-scroll state
+let autoScrollEnabled = false;     // Is auto-scroll running
+let autoScrollSpeed = 5;           // Speed level 1-10
+let autoScrollAnimationId = null;  // requestAnimationFrame reference
+let lastScrollTime = 0;            // For delta time calculation
+let accumulatedScrollPixels = 0;   // Sub-pixel accumulator
 ```
 
 **URL as State**:
@@ -367,10 +469,11 @@ let hideArtists = false;           // Hide artists toggle state
 ### Theming System
 
 Body classes control themes:
-- `body.theme-pink`, `body.theme-purple`, `body.theme-blue`, `body.theme-sunset`, `body.theme-dark`
+- `body.theme-pink`, `body.theme-sunset`, `body.theme-dark`
 - No class = default (original purple)
-- Each theme overrides: body background, title colors, lyrics colors, footer, chord pill, modal backgrounds
+- Each theme overrides: body background, title colors, lyrics colors, footer, chord pill, modal backgrounds, auto-scroll button styling
 - Dark theme is comprehensive - all UI elements get dark colors
+- Note: Purple and Blue themes were removed December 2025 to simplify options
 
 ### Font Sizing
 
@@ -497,7 +600,16 @@ This project is maintained by the user (Tal). When working on this project as an
 
 ---
 
-**Last Major Update**: November 15, 2024
+**Last Major Update**: December 10, 2025
+- Implemented sub-pixel accumulation for auto-scroll (makes all speeds 1-10 work reliably)
+- Created expandable Advanced Settings section in settings modal
+- Removed Purple and Blue theme options (now: Original, Pink, Sunset, Dark)
+- Moved "Auto-close songs" and "Keep chords at top" into Advanced Settings section
+- Adjusted auto-scroll speeds: linear scaling with device multipliers
+- Fixed subtitle layout shift issue (opacity instead of height)
+- Reordered settings: moved "Enable song reordering" before Advanced section
+
+**Previous Update**: November 15, 2024
 - Added sticky header functionality
 - Implemented comprehensive settings system (4 options)
 - Fixed lock feature bugs
