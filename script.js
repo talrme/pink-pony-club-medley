@@ -23,12 +23,14 @@ let autoScrollEnabled = false; // Is auto-scroll running
 let autoScrollSpeed = 5; // Speed level 1-10 (default 5)
 let autoScrollAnimationId = null; // requestAnimationFrame reference
 let lastScrollTime = 0; // For calculating scroll timing
+let accumulatedScrollPixels = 0; // Accumulator for sub-pixel precision
 
 // Auto-scroll constants (configurable for easy tweaking)
 const AUTO_SCROLL_MIN_SPEED = 1;
 const AUTO_SCROLL_MAX_SPEED = 10;
 const AUTO_SCROLL_DEFAULT_SPEED = 5;
-const AUTO_SCROLL_BASE_PPS = 60; // Base pixels per second at speed level 5
+const AUTO_SCROLL_BASE_PPS = 7.875; // Base pixels per second at speed 5 (desktop)
+// Using linear scaling - Speed 1 = 1.58 pps, Speed 5 = 7.88 pps, Speed 7 = 11.03 pps, Speed 10 = 15.75 pps
 
 // Initialize
 console.log('🔷 script.js loaded and executing');
@@ -1011,6 +1013,7 @@ function setupBottomBarButtons() {
             settingsModal.style.display = 'flex';
             initializeSettingsUI();
             setupScrollDetection();
+            setupAdvancedToggle();
         });
     }
     
@@ -1407,6 +1410,26 @@ function setupScrollDetection() {
     modalContent.addEventListener('scroll', checkScroll);
 }
 
+// Setup advanced settings toggle
+function setupAdvancedToggle() {
+    const advancedToggle = document.getElementById('advanced-toggle');
+    const advancedContent = document.getElementById('advanced-content');
+    
+    if (!advancedToggle || !advancedContent) return;
+    
+    advancedToggle.addEventListener('click', () => {
+        const isExpanded = advancedContent.classList.contains('expanded');
+        
+        if (isExpanded) {
+            advancedContent.classList.remove('expanded');
+            advancedToggle.classList.remove('expanded');
+        } else {
+            advancedContent.classList.add('expanded');
+            advancedToggle.classList.add('expanded');
+        }
+    });
+}
+
 // Update modal theme preview
 function updateModalThemePreview(theme) {
     const modalContent = document.querySelector('.settings-modal-content');
@@ -1588,6 +1611,7 @@ function startAutoScroll() {
     console.log('▶️ Starting auto-scroll at speed', autoScrollSpeed);
     autoScrollEnabled = true;
     lastScrollTime = performance.now();
+    accumulatedScrollPixels = 0; // Reset accumulator
     
     // Update UI
     const playIcon = document.getElementById('autoScrollPlayIcon');
@@ -1614,12 +1638,30 @@ function startAutoScroll() {
             return;
         }
         
-        // Calculate scroll amount based on speed
-        const pixelsPerSecond = AUTO_SCROLL_BASE_PPS * (autoScrollSpeed / AUTO_SCROLL_DEFAULT_SPEED);
+        // Calculate scroll amount with linear scaling
+        // Device-specific base speeds for consistent reading experience
+        const screenWidth = window.innerWidth;
+        let deviceMultiplier = 1; // Desktop base
+        if (screenWidth < 768) {
+            deviceMultiplier = 2; // Phone: 2x faster
+        } else if (screenWidth <= 1024) {
+            deviceMultiplier = 1.5; // Tablet: 1.5x faster
+        }
+        
+        // Linear scaling: speed directly proportional to pixels per second
+        const speedMultiplier = autoScrollSpeed / AUTO_SCROLL_DEFAULT_SPEED;
+        const pixelsPerSecond = AUTO_SCROLL_BASE_PPS * speedMultiplier * deviceMultiplier;
         const scrollAmount = (pixelsPerSecond / 1000) * deltaTime;
         
-        // Simple, direct scroll - let the browser handle everything
-        window.scrollBy(0, scrollAmount);
+        // Accumulate fractional pixels
+        accumulatedScrollPixels += scrollAmount;
+        
+        // Only scroll when we have at least 1 whole pixel
+        if (accumulatedScrollPixels >= 1) {
+            const pixelsToScroll = Math.floor(accumulatedScrollPixels);
+            window.scrollBy(0, pixelsToScroll);
+            accumulatedScrollPixels -= pixelsToScroll; // Keep the remainder
+        }
         
         // Continue animation
         autoScrollAnimationId = requestAnimationFrame(scroll);

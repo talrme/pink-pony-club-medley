@@ -134,33 +134,6 @@
                         Hide the floating auto-scroll button (bottom-right).
                     </p>
                 </div>
-                
-                <!-- Setting 1: Auto-close songs -->
-                <div class="setting-item">
-                    <label class="toggle-label">
-                        <input type="checkbox" id="auto-close-toggle">
-                        <span class="toggle-slider"></span>
-                        <span class="toggle-text">Auto-close songs</span>
-                    </label>
-                    <p class="setting-description">
-                        Opening a song automatically closes others (only one open at a time).
-                    </p>
-                    <p class="setting-tip" id="auto-close-tip" style="display: none;">
-                        <strong>💡 Tip:</strong> Long-press (hold) a song title to "lock" it open. Locked songs stay visible even when auto-close is on.
-                    </p>
-                </div>
-
-                <!-- Setting 1.5: Enable song reordering -->
-                <div class="setting-item">
-                    <label class="toggle-label">
-                        <input type="checkbox" id="enable-reordering-toggle">
-                        <span class="toggle-slider"></span>
-                        <span class="toggle-text">Enable song reordering</span>
-                    </label>
-                    <p class="setting-description">
-                        Show drag handles (⋮⋮) to reorder songs by dragging.
-                    </p>
-                </div>
 
                 <!-- Setting 2: Color Theme -->
                 <div class="setting-item">
@@ -173,14 +146,6 @@
                         <button class="theme-option" data-theme="pink" title="Pink Pony">
                             <div class="theme-preview" style="background: linear-gradient(135deg, #FF69B4, #FF1493, #C71585)"></div>
                             <span>Pink Pony</span>
-                        </button>
-                        <button class="theme-option" data-theme="purple" title="Purple Dreams">
-                            <div class="theme-preview" style="background: linear-gradient(135deg, #9333ea, #7c3aed, #6d28d9)"></div>
-                            <span>Purple</span>
-                        </button>
-                        <button class="theme-option" data-theme="blue" title="Ocean Blue">
-                            <div class="theme-preview" style="background: linear-gradient(135deg, #60a5fa, #3b82f6, #2563eb)"></div>
-                            <span>Blue</span>
                         </button>
                         <button class="theme-option" data-theme="sunset" title="Sunset Orange">
                             <div class="theme-preview" style="background: linear-gradient(135deg, #fb923c, #f97316, #ea580c)"></div>
@@ -217,16 +182,52 @@
                     </p>
                 </div>
 
-                <!-- Setting 5: Sticky Chords -->
+                <!-- Setting: Enable song reordering -->
                 <div class="setting-item">
                     <label class="toggle-label">
-                        <input type="checkbox" id="sticky-chords-toggle" checked>
+                        <input type="checkbox" id="enable-reordering-toggle">
                         <span class="toggle-slider"></span>
-                        <span class="toggle-text">Keep chords at top</span>
+                        <span class="toggle-text">Enable song reordering</span>
                     </label>
                     <p class="setting-description">
-                        Chords stay visible at the top when scrolling down.
+                        Show drag handles (⋮⋮) to reorder songs by dragging.
                     </p>
+                </div>
+
+                <!-- Advanced Settings Section -->
+                <div class="advanced-settings">
+                    <button class="advanced-toggle" id="advanced-toggle">
+                        <span class="advanced-icon">▶</span>
+                        <span>Advanced</span>
+                    </button>
+                    <div class="advanced-content" id="advanced-content">
+                        <!-- Setting: Auto-close songs -->
+                        <div class="setting-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="auto-close-toggle">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Auto-close songs</span>
+                            </label>
+                            <p class="setting-description">
+                                Opening a song automatically closes others (only one open at a time).
+                            </p>
+                            <p class="setting-tip" id="auto-close-tip" style="display: none;">
+                                <strong>💡 Tip:</strong> Long-press (hold) a song title to "lock" it open. Locked songs stay visible even when auto-close is on.
+                            </p>
+                        </div>
+
+                        <!-- Setting: Sticky Chords -->
+                        <div class="setting-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="sticky-chords-toggle" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Keep chords at top</span>
+                            </label>
+                            <p class="setting-description">
+                                Chords stay visible at the top when scrolling down.
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- URL Note -->
