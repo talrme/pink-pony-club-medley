@@ -17,7 +17,7 @@
     }
   ],
   "start_url": "/pink-pony-club-medley/",
-  "display": "browser",
+  "display": "standalone",
   "theme_color": "#8b5cf6",
   "background_color": "#8b5cf6",
   "orientation": "portrait-primary"

@@ -1416,6 +1416,9 @@ body.hide-auto-scroll .auto-scroll-container {
     width: 44px;
     height: 44px;
     transform: translateX(0);
+    touch-action: manipulation; /* Prevents zoom on double-tap */
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* When not scrolling, play button is smaller and positioned to the right */
@@ -1445,6 +1448,9 @@ body.hide-auto-scroll .auto-scroll-container {
     transform: scale(0.8);
     pointer-events: none;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    touch-action: manipulation; /* Prevents zoom on double-tap */
+    user-select: none; /* Prevents text selection */
+    -webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
 }
 
 .auto-scroll-speed-btn svg {
