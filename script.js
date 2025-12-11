@@ -1,5 +1,5 @@
 // App version
-const APP_VERSION = '1.0.1';
+const APP_VERSION = '1.0.2';
 
 // State
 let songs = [];
@@ -1510,6 +1510,9 @@ async function switchProgression(newProgression) {
     renderSongs(false, true); // Force default expand for new progression
     updateToggleAllButton();
     updateURL();
+    
+    // Scroll to top of page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     
     closeProgressionModal();
 }
