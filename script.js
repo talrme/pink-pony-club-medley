@@ -1,5 +1,5 @@
 // App version
-const APP_VERSION = '1.0.5';
+const APP_VERSION = '1.0.6';
 
 // State
 let songs = [];
