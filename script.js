@@ -1,5 +1,5 @@
 // App version
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.1.1';
 
 // State
 let songs = [];
@@ -1653,6 +1653,7 @@ function startAutoScroll() {
     autoScrollEnabled = true;
     lastScrollTime = performance.now();
     accumulatedScrollPixels = 0; // Reset accumulator
+    autoScrollPausedForTouch = false; // Ensure not paused when starting
     
     // Update UI
     const playIcon = document.getElementById('autoScrollPlayIcon');
