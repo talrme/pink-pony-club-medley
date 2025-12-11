@@ -1,5 +1,5 @@
 // App version
-const APP_VERSION = '1.0.3';
+const APP_VERSION = '1.0.4';
 
 // State
 let songs = [];
@@ -1714,12 +1714,15 @@ function stopAutoScroll() {
 function adjustAutoScrollSpeed(delta) {
     const newSpeed = Math.max(AUTO_SCROLL_MIN_SPEED, Math.min(AUTO_SCROLL_MAX_SPEED, autoScrollSpeed + delta));
     
+    // Always show indicator, even if at boundaries
     if (newSpeed !== autoScrollSpeed) {
         autoScrollSpeed = newSpeed;
         localStorage.setItem('autoScrollSpeed', autoScrollSpeed);
-        showSpeedIndicator();
         updateURL();
     }
+    
+    // Show current speed regardless of whether it changed
+    showSpeedIndicator();
 }
 
 // Show speed indicator with fade effect
