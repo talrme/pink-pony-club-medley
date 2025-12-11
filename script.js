@@ -1,5 +1,5 @@
 // App version
-const APP_VERSION = '1.0.9';
+const APP_VERSION = '1.1.0';
 
 // State
 let songs = [];
@@ -1114,6 +1114,9 @@ function loadSettings() {
         document.body.classList.add(`theme-${currentTheme}`);
     }
     
+    // Update iOS status bar color to match theme
+    updateStatusBarColor(currentTheme);
+    
     // Font size
     if (urlParams.has('fontSize')) {
         fontSize = urlParams.get('fontSize');
@@ -1244,6 +1247,9 @@ function initializeSettingsUI() {
             
             // Update modal preview immediately
             updateModalThemePreview(theme);
+            
+            // Update iOS status bar color based on theme
+            updateStatusBarColor(theme);
             
             // Update UI
             document.body.className = '';
@@ -1452,6 +1458,24 @@ function updateModalThemePreview(theme) {
     // Add new preview class if not default
     if (theme !== 'default') {
         modalContent.classList.add(`preview-${theme}`);
+    }
+}
+
+// Update iOS status bar color to match current theme
+function updateStatusBarColor(theme) {
+    const themeColors = {
+        'default': '#8b5cf6',  // Original purple
+        'pink': '#FF1493',     // Deep pink
+        'sunset': '#ea580c',   // Orange
+        'dark': '#374151'      // Dark gray
+    };
+    
+    const color = themeColors[theme] || themeColors['default'];
+    
+    // Update meta tag
+    let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', color);
     }
 }
 
