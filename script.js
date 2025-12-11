@@ -29,8 +29,8 @@ let accumulatedScrollPixels = 0; // Accumulator for sub-pixel precision
 const AUTO_SCROLL_MIN_SPEED = 1;
 const AUTO_SCROLL_MAX_SPEED = 10;
 const AUTO_SCROLL_DEFAULT_SPEED = 5;
-const AUTO_SCROLL_BASE_PPS = 7.875; // Base pixels per second at speed 5 (desktop)
-// Using linear scaling - Speed 1 = 1.58 pps, Speed 5 = 7.88 pps, Speed 7 = 11.03 pps, Speed 10 = 15.75 pps
+// Linear scaling: Level 1 = 1.58 pps (unchanged), Level 10 = 31.5 pps (2x faster)
+// Formula: pps = 1.58 + 3.324 * (level - 1)
 
 // Initialize
 console.log('🔷 script.js loaded and executing');
@@ -1648,9 +1648,10 @@ function startAutoScroll() {
             deviceMultiplier = 1.5; // Tablet: 1.5x faster
         }
         
-        // Linear scaling: speed directly proportional to pixels per second
-        const speedMultiplier = autoScrollSpeed / AUTO_SCROLL_DEFAULT_SPEED;
-        const pixelsPerSecond = AUTO_SCROLL_BASE_PPS * speedMultiplier * deviceMultiplier;
+        // Linear interpolation: Level 1 = 1.58 pps, Level 10 = 31.5 pps (desktop)
+        // Formula: pps = 1.58 + (3.324 * (level - 1))
+        const basePPS = 1.58 + (3.324 * (autoScrollSpeed - 1));
+        const pixelsPerSecond = basePPS * deviceMultiplier;
         const scrollAmount = (pixelsPerSecond / 1000) * deltaTime;
         
         // Accumulate fractional pixels
