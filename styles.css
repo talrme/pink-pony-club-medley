@@ -71,10 +71,10 @@ header.not-sticky.stuck .subtitle {
 header::before {
     content: '';
     position: fixed;
-    top: -50px; /* Extend upward to cover status bar area */
+    top: calc(-100px - env(safe-area-inset-top, 0px)); /* Extend way up to cover status bar + safe area */
     left: 0;
     right: 0;
-    height: 140px; /* Increased from 90px to cover status bar */
+    height: calc(200px + env(safe-area-inset-top, 0px)); /* Much taller to ensure coverage */
     background: transparent;
     z-index: 99;
     pointer-events: none;
@@ -87,9 +87,10 @@ header.stuck::before {
     opacity: 1;
     background: linear-gradient(to bottom,
         rgba(139, 92, 246, 1) 0%,      /* Solid at very top */
-        rgba(139, 92, 246, 0.95) 36%,  /* ~50px down */
-        rgba(139, 92, 246, 0.7) 57%,   /* Adjusted */
-        rgba(139, 92, 246, 0.4) 78%,   /* Adjusted */
+        rgba(139, 92, 246, 1) 50%,     /* Keep solid through safe area */
+        rgba(139, 92, 246, 0.95) 65%,  /* Start fade */
+        rgba(139, 92, 246, 0.7) 80%,   /* Mid fade */
+        rgba(139, 92, 246, 0.4) 90%,   /* Light fade */
         transparent 100%);
 }
 
@@ -1108,9 +1109,10 @@ body.theme-pink .chord {
 body.theme-pink header.stuck::before {
     background: linear-gradient(to bottom,
         rgba(255, 105, 180, 1) 0%,
-        rgba(255, 105, 180, 0.95) 36%,
-        rgba(255, 20, 147, 0.7) 57%,
-        rgba(255, 20, 147, 0.4) 78%,
+        rgba(255, 105, 180, 1) 50%,
+        rgba(255, 105, 180, 0.95) 65%,
+        rgba(255, 20, 147, 0.7) 80%,
+        rgba(255, 20, 147, 0.4) 90%,
         transparent 100%);
 }
 
@@ -1159,9 +1161,10 @@ body.theme-sunset .chord {
 body.theme-sunset header.stuck::before {
     background: linear-gradient(to bottom,
         rgba(251, 146, 60, 1) 0%,
-        rgba(251, 146, 60, 0.95) 36%,
-        rgba(249, 115, 22, 0.7) 57%,
-        rgba(249, 115, 22, 0.4) 78%,
+        rgba(251, 146, 60, 1) 50%,
+        rgba(251, 146, 60, 0.95) 65%,
+        rgba(249, 115, 22, 0.7) 80%,
+        rgba(249, 115, 22, 0.4) 90%,
         transparent 100%);
 }
 
@@ -1335,9 +1338,10 @@ body.theme-dark .info-modal-content a:hover {
 body.theme-dark header.stuck::before {
     background: linear-gradient(to bottom,
         rgba(55, 65, 81, 1) 0%,
-        rgba(55, 65, 81, 0.95) 36%,
-        rgba(31, 41, 55, 0.7) 57%,
-        rgba(31, 41, 55, 0.4) 78%,
+        rgba(55, 65, 81, 1) 50%,
+        rgba(55, 65, 81, 0.95) 65%,
+        rgba(31, 41, 55, 0.7) 80%,
+        rgba(31, 41, 55, 0.4) 90%,
         transparent 100%);
 }
 
