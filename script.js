@@ -1,3 +1,6 @@
+// App version
+const APP_VERSION = '1.0.1';
+
 // State
 let songs = [];
 let currentOrder = [];
@@ -1203,6 +1206,12 @@ function loadSettings() {
 function initializeSettingsUI() {
     // Set initial theme preview
     updateModalThemePreview(currentTheme);
+    
+    // Display app version
+    const versionElement = document.getElementById('app-version');
+    if (versionElement) {
+        versionElement.textContent = APP_VERSION;
+    }
     
     // Set auto-close toggle
     const autoCloseToggle = document.getElementById('auto-close-toggle');
