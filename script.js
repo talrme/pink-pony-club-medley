@@ -1,5 +1,5 @@
 // App version
-const APP_VERSION = '1.0.2';
+const APP_VERSION = '1.0.3';
 
 // State
 let songs = [];
@@ -27,6 +27,8 @@ let autoScrollSpeed = 5; // Speed level 1-10 (default 5)
 let autoScrollAnimationId = null; // requestAnimationFrame reference
 let lastScrollTime = 0; // For calculating scroll timing
 let accumulatedScrollPixels = 0; // Accumulator for sub-pixel precision
+let autoScrollPausedForTouch = false; // Temporarily paused during manual scroll
+let momentumScrollTimeout = null; // Timeout for detecting end of momentum scroll
 
 // Auto-scroll constants (configurable for easy tweaking)
 const AUTO_SCROLL_MIN_SPEED = 1;
@@ -1604,6 +1606,9 @@ function setupAutoScrollControls() {
     // Setup scroll position detection for mobile
     setupScrollPositionDetection();
     
+    // Setup touch event listeners to pause auto-scroll during manual scrolling
+    setupTouchPauseDetection();
+    
     // Update initial visibility
     updateAutoScrollUI();
     console.log('✓ Auto-scroll controls setup complete');
@@ -1639,6 +1644,12 @@ function startAutoScroll() {
     // Simple, robust scroll loop
     function scroll(currentTime) {
         if (!autoScrollEnabled) return;
+        
+        // Pause scrolling if user is manually touching/scrolling
+        if (autoScrollPausedForTouch) {
+            autoScrollAnimationId = requestAnimationFrame(scroll);
+            return;
+        }
         
         // Calculate time delta
         const deltaTime = currentTime - lastScrollTime;
@@ -1754,6 +1765,68 @@ function setupScrollPositionDetection() {
             container.classList.remove('at-bottom');
         }
     });
+}
+
+// Setup touch event listeners to pause auto-scroll during manual scrolling
+function setupTouchPauseDetection() {
+    // Listen for touch start anywhere on the page
+    document.addEventListener('touchstart', () => {
+        if (autoScrollEnabled) {
+            autoScrollPausedForTouch = true;
+            // Clear any existing momentum detection timeout
+            if (momentumScrollTimeout) {
+                clearTimeout(momentumScrollTimeout);
+                momentumScrollTimeout = null;
+            }
+        }
+    }, { passive: true });
+    
+    // When touch ends, start monitoring for momentum scrolling
+    document.addEventListener('touchend', () => {
+        if (autoScrollEnabled && autoScrollPausedForTouch) {
+            // Don't resume immediately - wait to see if momentum scrolling happens
+            detectMomentumScrollEnd();
+        }
+    }, { passive: true });
+    
+    // Monitor scroll events to detect momentum scrolling
+    let lastScrollEventTime = 0;
+    
+    window.addEventListener('scroll', () => {
+        // Only care about scroll events when paused for touch
+        if (autoScrollEnabled && autoScrollPausedForTouch) {
+            lastScrollEventTime = performance.now();
+            
+            // Clear existing timeout
+            if (momentumScrollTimeout) {
+                clearTimeout(momentumScrollTimeout);
+            }
+            
+            // Set new timeout - if no scroll events for 150ms, momentum has stopped
+            momentumScrollTimeout = setTimeout(() => {
+                resumeAutoScrollAfterTouch();
+            }, 150);
+        }
+    }, { passive: true });
+    
+    function detectMomentumScrollEnd() {
+        // If already have a timeout running, momentum is being detected
+        if (momentumScrollTimeout) return;
+        
+        // Set a timeout to check if momentum scrolling started
+        // If no scroll events within 50ms, there's no momentum - resume immediately
+        momentumScrollTimeout = setTimeout(() => {
+            resumeAutoScrollAfterTouch();
+        }, 50);
+    }
+    
+    function resumeAutoScrollAfterTouch() {
+        if (autoScrollEnabled) {
+            autoScrollPausedForTouch = false;
+            lastScrollTime = performance.now(); // Reset timing to prevent jumps
+        }
+        momentumScrollTimeout = null;
+    }
 }
 
 
